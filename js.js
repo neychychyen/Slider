@@ -55,7 +55,8 @@ class MouseDown extends MouseTracker{
 
 	constructor() {
 				super();
-				this.MouseTracker = new MouseTracker();
+				this.intervalId = null;
+				this.myMouseTracker = new MouseTracker()
 
 				
 		}
@@ -67,17 +68,20 @@ class MouseDown extends MouseTracker{
 
 	startEvents() {
 				document.addEventListener('mousedown', () => {
-					this.MouseTracker.startEvents()
-					console.log('mousedown')
-					this.__handleMouse(event)
-					console.log(this.getMousePosition())
+					this.myMouseTracker.startEvents()
+					this.intervalId = setInterval(() => {
+						let {x, y} = this.myMouseTracker.getMousePosition()
+						console.log('mousedown')
+						console.log(`getMousePosition(): ${x}, ${y}`)
+
+					},100)
+
 				});
 
 				document.addEventListener('mouseup', () => {
 					console.log('mouseup')
-					this.MouseTracker.stopEvents()
-					this.__handleMouse(event)
-					console.log(this.getMousePosition())
+					this.myMouseTracker.stopEvents()
+					clearInterval(this.intervalId);
 				});
 		}
 
