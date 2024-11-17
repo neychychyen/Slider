@@ -84,7 +84,7 @@ body {
 
 
 .content{
-  height: 100%; 
+  height: 400px; 
   background: var(--OrangeRed);
   display:flex;
   padding: 10px;

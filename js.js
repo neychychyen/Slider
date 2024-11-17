@@ -1,24 +1,42 @@
 // Обработчик смещения мыши
-class MouseTracker {
+
+class Events{
+	constructor(){
+
+	}
+
+	startEvents(){
+
+	}
+
+	stopEvents() {
+
+		}
+}
+
+
+
+class MouseTracker extends Events{
 		constructor() {
+				super()
 				this.mouseX = 0;
 				this.mouseY = 0;
 
-				this.__handleMouseMove = this.__handleMouseMove.bind(this);
+				this.__handleMouse = this.__handleMouse.bind(this);
 				
 		}
 
 		startEvents() {
-				document.addEventListener('mousemove', this.__handleMouseMove);
+				document.addEventListener('mousemove', this.__handleMouse);
 		}
 
 		// Останавливаем отслеживание событий
 		stopEvents() {
-				document.removeEventListener('mousemove', this.__handleMouseMove);
+				document.removeEventListener('mousemove', this.__handleMouse);
 		}
 
 		// Обработчик события мыши
-		__handleMouseMove(event) {
+		__handleMouse(event) {
 				this.mouseX = event.clientX; // Координата X мыши
 				this.mouseY = event.clientY; // Координата Y мыши
 
@@ -29,6 +47,51 @@ class MouseTracker {
 		getMousePosition() {
 				return { x: this.mouseX, y: this.mouseY };
 		}
+}
+
+
+
+class MouseDown extends MouseTracker{
+
+	constructor() {
+				super();
+				this.MouseTracker = new MouseTracker();
+
+				
+		}
+
+	getMousePosition() {
+				console.log('Пошла жара')
+				console.log(super.getMousePosition())
+		}
+
+	startEvents() {
+				document.addEventListener('mousedown', () => {
+					this.MouseTracker.startEvents()
+					console.log('mousedown')
+					this.__handleMouse(event)
+					console.log(this.getMousePosition())
+				});
+
+				document.addEventListener('mouseup', () => {
+					console.log('mouseup')
+					this.MouseTracker.stopEvents()
+					this.__handleMouse(event)
+					console.log(this.getMousePosition())
+				});
+		}
+
+		// Останавливаем отслеживание событий
+	stopEvents() {
+				document.removeEventListener('mousedown', () => {
+					this.__handleMouse
+					this.getMousePosition
+				});
+		}
+
+
+
+
 }
 
 
@@ -43,7 +106,7 @@ class Slider{
 
 
 				this.mymouseTracker = new MouseTracker();
-				this.mymouseTracker.startEvents()
+				
 
 		}
 
@@ -146,6 +209,7 @@ class Slider{
 
 		mousemove() {
 				this.content.addEventListener('mouseenter', (event) => {
+								this.mymouseTracker.startEvents()
 								let intervalMainId = setInterval(() => { 
 												let {x, y} = this.getMousePosition()
 												let contentWidth = this.content.offsetWidth;
@@ -168,6 +232,8 @@ class Slider{
 
 
 				this.content.addEventListener('mouseleave', () => {
+
+								this.mymouseTracker.stopEvents()
 								clearInterval(intervalMainId);  // Останавливаем setInterval
 				});
 
@@ -188,3 +254,7 @@ MenuSlider = new Slider(content, nested)
 
 
 MenuSlider.mousemove()
+
+
+x = new MouseDown()
+x.startEvents()
