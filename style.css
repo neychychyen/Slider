@@ -2,7 +2,37 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box; /* Убедитесь, что padding входит в общую ширину */
+
+  scrollbar-width: thin;
+  scrollbar-color: black hsl(0 0% 20%);
+
 }
+
+
+/*Скроллбар */
+/* Скрываем стандартные кнопки */
+::-webkit-scrollbar-button {
+    display: none;
+}
+
+/* Настраиваем общий вид скроллбара */
+::-webkit-scrollbar {
+    width: 1vw; /* Ширина вертикального скроллбара */
+    height: 1vw; /* Высота горизонтального скроллбара */
+}
+
+/* Фон полосы прокрутки */
+::-webkit-scrollbar-track {
+    background: green; /* Прозрачный трек */
+}
+
+/* Сам ползунок */
+::-webkit-scrollbar-thumb {
+    background-color: red; /* Тонкая темная полоска */
+    border-radius: 0px; /* Скругление */
+}
+
+
 
 :root {
 
@@ -43,20 +73,24 @@
 
 
 body {
+  overflow-x: hidden;
   margin: 0;
   padding: 0;
   background-color: blue;
   height: 5000px;  
+
+  
 }
 
 
 .content{
+  height: 100%; 
   background: var(--OrangeRed);
   display:flex;
-  align-items: center;
   padding: 10px;
   gap:10px;
   width: 100vw;
+  overflow: hidden;
 }
 
 .coub{
@@ -86,7 +120,7 @@ body {
 
 
 .slider{
-  overflow: hidden;
+  overflow-x: hidden;
   display: flex;
   background: aquamarine;
   gap: 10px;
