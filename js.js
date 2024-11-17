@@ -19,8 +19,8 @@ class Events{
 class MouseTracker extends Events{
 		constructor() {
 				super()
-				this.mouseX = 0;
-				this.mouseY = 0;
+				this.mouseX = null;
+				this.mouseY = null;
 
 				this.__handleMouse = this.__handleMouse.bind(this);
 				
@@ -55,8 +55,10 @@ class MouseDown extends MouseTracker{
 
 	constructor() {
 				super();
+				this.mouseXNew = null;
+				this.mouseYNew = null;
 				this.intervalId = null;
-				this.myMouseTracker = new MouseTracker()
+				this.myMouseTracker
 
 				
 		}
@@ -67,12 +69,37 @@ class MouseDown extends MouseTracker{
 		}
 
 	startEvents() {
+
 				document.addEventListener('mousedown', () => {
+					this.myMouseTracker = new MouseTracker()
 					this.myMouseTracker.startEvents()
 					this.intervalId = setInterval(() => {
 						let {x, y} = this.myMouseTracker.getMousePosition()
-						console.log('mousedown')
-						console.log(`getMousePosition(): ${x}, ${y}`)
+						//console.log('mousedown')
+						//console.log(`getMousePosition(): ${x}, ${y}`)
+
+						if (x != null){
+							if (this.mouseX == null){
+								this.mouseX = x;
+								this.mouseY = y;
+
+							}
+							else if (this.mouseXNew == null){
+								this.mouseXNew = x;
+								this.mouseYNew = y;
+							}
+
+							else {
+								let differenceY = this.mouseYNew - this.mouseY
+								let differenceX = this.mouseXNew - this.mouseX
+								this.mouseX = this.mouseXNew
+								this.mouseY = this.mouseYNew
+								this.mouseXNew = x;
+								this.mouseYNew = y;
+								console.log(`Позиционирование по пиксельно x ${differenceX}, y ${differenceY}, `)
+								console.log(`x ${this.mouseY }, y ${this.mouseX}, x ${this.mouseYNew }, y ${this.mouseXNew}, `)
+							}
+						}
 
 					},100)
 
@@ -81,6 +108,7 @@ class MouseDown extends MouseTracker{
 				document.addEventListener('mouseup', () => {
 					console.log('mouseup')
 					this.myMouseTracker.stopEvents()
+					this.myMouseTracker = null
 					clearInterval(this.intervalId);
 				});
 		}
