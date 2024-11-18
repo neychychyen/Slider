@@ -268,13 +268,20 @@ class Slider{
 		}
 
 		mousemove() {
+
+			//Для компьютерной версии
+			if (window.matchMedia('(hover: none)').matches) {
+				
+			}
+				
+
 				this.content.addEventListener('mouseenter', (event) => {
 
 
 								this.mymouseTouchDown.startEvents()
 								
-								console.log('enter mousemove()')
-									
+								//console.log('enter mousemove()')
+
 								this.mymouseTracker.startEvents()
 								let intervalMainId = setInterval(() => { 
 
@@ -367,7 +374,5 @@ MenuSlider = new Slider(content, nested)
 MenuSlider.mousemove()
 
 
-let x = new MouseTouchDown()
-x.startEvents()
 
 

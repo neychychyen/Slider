@@ -83,7 +83,7 @@ body {
 }
 
 
-.content{
+.slider-content{
   height: 400px; 
   background: var(--OrangeRed);
   display:flex;
@@ -141,4 +141,18 @@ body {
   display: flex;
   gap: 10px;
   transition: left var(--real_transition); ease-out;
+}
+
+
+.block{
+  width: 100%;
+  height: 300px;
+  padding: 10px;
+  background: lightcoral;
+}
+
+.pad-block{
+  width: 100%;
+  height: 100%;
+  background: greenyellow;
 }

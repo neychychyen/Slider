@@ -1,62 +1,72 @@
-class MouseTouch extends MouseTracker{
+class TouchDown extends MouseTracker{
 
     constructor() {
                 super();
-                this.__handleTouchDown = this.__handleTouchDown.bind(this);
-                this.__handleTouchUp = this.__handleTouchUp.bind(this);
                 this.__handleTouch = this.__handleTouch.bind(this);
+                this.works = false
         }
 
-
-    __handleTouchDown(event) {
-        const touch = event.touches[0];
-        this.mouseX = touch.clientX;
-        this.mouseY = touch.clientY;
-        document.addEventListener('touchmove', this.__handleTouch, { passive: false });
-        
-    }
-
-    __handleTouchUp(event) {
-        const touch = event.touches[0];
-        this.mouseX = touch.clientX;
-        this.mouseY = touch.clientY;
-        document.removeEventListener('touchmove', this.__handleTouch, { passive: false });
-        
-    }
 
     __handleTouch(event) {
         const touch = event.touches[0];
         this.mouseX = touch.clientX;
         this.mouseY = touch.clientY;
+        console.log(`this.mouseX ${this.mouseX}, ${this.mouseY}`)
     }
 
 
 
     startEvents() {
-
-                document.addEventListener('mousedown', this.__handleMouseDown);
-                document.addEventListener('mouseup', this.__handleMouseUp);
-
-                document.addEventListener('touchstart', this.__handleTouch, { passive: false });                
-                document.addEventListener('touchend', this.__handleTouchEnd);
+                
+                this.works = true
+                document.addEventListener('touchmove', this.__handleTouch, { passive: false });                
+                console.log('startEvents() Запущен')
         }
 
         // Останавливаем отслеживание событий
     stopEvents() {
-                document.removeEventListener('mousedown', this.__handleMouseDown);
-                document.removeEventListener('mouseup', this.__handleMouseUp);
 
-                document.removeEventListener('touchstart', this.__handleTouch, { passive: false });                
-                document.removeEventListener('touchend', this.__handleTouchEnd);
+                this.works = false
+                document.removeEventListener('touchmove', this.__handleTouch, { passive: false });                
                 this.mouseX = null;
                 this.mouseY = null;
         }
 
     getPos(){
-        return (this.mouseX, this.mouseY)
+        return [this.mouseX, this.mouseY, this.works]
     }
 
 
 
 }
+
+elem = document.querySelector('.pad-block')
+
+let x = new TouchDown()
+
+let boundStartEvents = (elem) => {
+    x.startEvents(elem)
+    console.log('Вошли в elem')
+}
+
+elem.addEventListener('touchstart', boundStartEvents, { passive: false })
+
+
+
+
+
+document.addEventListener('touchend', (event) => {
+
+            console.log('Отпустили палец')
+            console.log(`if x.getPos[2] == true ${x.getPos()[2]}`)
+            if (x.getPos()[2] == true) {
+                console.log('x.getPos[2] == true')
+                elem.removeEventListener('touchstart', boundStartEvents)
+                x.stopEvents()
+
+            }
+        
+
+        }   
+    )
 
