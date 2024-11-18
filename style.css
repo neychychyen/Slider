@@ -120,7 +120,7 @@ body {
 
 
 .slider{
-  overflow-x: hidden;
+  overflow: hidden;
   display: flex;
   background: aquamarine;
   gap: 10px;

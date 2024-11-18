@@ -62,6 +62,8 @@ class MouseDown extends MouseTracker{
 				this.differenceY
 				this.differenceX
 
+				this.__eventFunctionDown = this.__eventFunctionDown.bind(this);
+				this.__eventFunctionUp = this.__eventFunctionUp.bind(this);
 				
 		}
 
@@ -70,15 +72,14 @@ class MouseDown extends MouseTracker{
 				console.log(super.getMousePosition())
 		}
 
-	startEvents() {
-
-				document.addEventListener('mousedown', () => {
+	__eventFunctionDown(event){
 					this.myMouseTracker = new MouseTracker()
 					this.myMouseTracker.startEvents()
+					console.log('mousedown')
 					this.intervalId = setInterval(() => {
 						let {x, y} = this.myMouseTracker.getMousePosition()
-						//console.log('mousedown')
-						//console.log(`getMousePosition(): ${x}, ${y}`)
+						console.log(`============================================================================`)
+						console.log(`getMousePosition(): ${x}, ${y}`)
 
 						if (x != null){
 							if (this.mouseX == null){
@@ -98,34 +99,53 @@ class MouseDown extends MouseTracker{
 								this.mouseY = this.mouseYNew
 								this.mouseXNew = x;
 								this.mouseYNew = y;
-								//console.log(`Позиционирование по пиксельно x ${this.differenceX}, y ${this.differenceY}, `)
-								//console.log(`x ${this.mouseY }, y ${this.mouseX}, x ${this.mouseYNew }, y ${this.mouseXNew}, `)
+								console.log(`Позиционирование по пиксельно x ${this.differenceX}, y ${this.differenceY}, `)
+								console.log(`x ${this.mouseY }, y ${this.mouseX}, x ${this.mouseYNew }, y ${this.mouseXNew}, `)
 							}
 						}
 
-					},100)
+					},200)
 
-				});
+	}
 
-				document.addEventListener('mouseup', () => {
+	__eventFunctionUp(event){
+				setTimeout(() => {
 					console.log('mouseup')
 					this.myMouseTracker.stopEvents()
 					this.myMouseTracker = null
 					clearInterval(this.intervalId);
-				});
+
+
+				}, 250
+					)
+					
+
+	}
+
+	startEvents() {
+
+				document.addEventListener('mousedown', this.__eventFunctionDown);
+
+				document.addEventListener('mouseup', this.__eventFunctionUp);
 		}
 
 		// Останавливаем отслеживание событий
 	stopEvents() {
-				document.removeEventListener('mousedown', () => {
-				});
+				document.removeEventListener('mousedown', this.__eventFunctionDown);
 
-				document.removeEventListener('mouseup', () => {
-				});
+				document.removeEventListener('mouseup', this.__eventFunctionUp);
 		}
 
 	difference(){
-		return { x: this.differenceX, y: this.differenceY };
+		let work
+		if (this.myMouseTracker == null || this.mouseXNew == null){
+			work = false
+		}
+		else {
+			work = true
+		}
+
+		return [this.differenceX, this.differenceY, work];
 	}
 
 
@@ -144,6 +164,7 @@ class Slider{
 
 
 				this.mymouseTracker = new MouseTracker();
+				this.mouseDown = null;
 				
 
 		}
@@ -247,8 +268,13 @@ class Slider{
 
 		mousemove() {
 				this.content.addEventListener('mouseenter', (event) => {
+
+								this.mouseDown = new MouseDown()
+								this.mouseDown.startEvents()
+
 								this.mymouseTracker.startEvents()
 								let intervalMainId = setInterval(() => { 
+
 												let {x, y} = this.getMousePosition()
 												let contentWidth = this.content.offsetWidth;
 												// Получаем текущую позицию мыши относительно начала элемента
@@ -256,23 +282,39 @@ class Slider{
 												// Объявляем переменную intervalId за пределами условий, чтобы она была доступна для clearInterval()
 												let width = window.innerWidth * 0.05;
 
-												//Если мышь в 0-10% от ширины
-												if (mouseX < contentWidth * 0.1) {
+												let mouseDownRes = this.mouseDown.difference()
+												if (mouseDownRes[2] == true) {
+													this.addToLeft(mouseDownRes[0])
+												}
+					
+
+												//Если мышь в 0-1% от ширины
+												else if (mouseX < contentWidth * 0.01) {
 																this.addToLeft(1*width);
 																																														} 
 
-												//Если мышь в 90-100% от ширины
-												else if (mouseX > contentWidth * 0.9) {
+												//Если мышь в 99-100% от ширины
+												else if (mouseX > contentWidth * 0.98) {
 																this.addToLeft(-1*width);
+
+												
+												//this.addToLeft(x)
 																																																				}
 
-								}, 100);
+								}, 1);
 
 
 				this.content.addEventListener('mouseleave', () => {
 
-								this.mymouseTracker.stopEvents()
+								if (this.mouseDown != null) {
+									this.mouseDown.stopEvents()
+									this.mymouseTracker.stopEvents()
+									this.mouseDown = null;
+								}
+								
+								
 								clearInterval(intervalMainId);  // Останавливаем setInterval
+								
 				});
 
 		});
@@ -294,5 +336,6 @@ MenuSlider = new Slider(content, nested)
 MenuSlider.mousemove()
 
 
-x = new MouseDown()
-x.startEvents()
+
+
+
