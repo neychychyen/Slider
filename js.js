@@ -55,109 +55,87 @@ class MouseTracker extends Events{
 
 
 
-class MouseDown extends MouseTracker{
+class MouseTouchDown extends MouseTracker{
 
-	constructor() {
-				super();
-				this.mouseXNew = null;
-				this.mouseYNew = null;
-				this.intervalId = null;
-				this.myMouseTracker = new MouseTracker()
-				this.differenceY
-				this.differenceX
+    constructor() {
+                super();
 
-				this.__eventFunctionDown = this.__eventFunctionDown.bind(this);
-				this.__eventFunctionUp = this.__eventFunctionUp.bind(this);
-				
-		}
+                this.__handleMouseDown = this.__handleMouseDown.bind(this);
+                this.__handleMouseUp = this.__handleMouseUp.bind(this);
+                this.__handleMouse = this.__handleMouse.bind(this);
+                this.__handleTouchDown = this.__handleTouchDown.bind(this);
+                this.__handleTouchUp = this.__handleTouchUp.bind(this);
+                this.__handleTouch = this.__handleTouch.bind(this);
+        }
 
-	getMousePosition() {
-				console.log('Пошла жара')
-				console.log(super.getMousePosition())
-		}
+    __handleMouseDown(event) {
+        this.mouseX = event.clientX;
+        this.mouseY = event.clientY;
+        document.addEventListener('mousemove', this.__handleMouse);
+        
+    }
 
-	__eventFunctionDown(event){
-					
-					this.myMouseTracker.startEvents()
-					console.log('mousedown')
-					this.intervalId = setInterval(() => {
-						if (this.myMouseTracker == null) {
-				            clearInterval(this.intervalId); // Остановка таймера, если myMouseTracker больше не существует
-				            return;
-				        }
+    __handleMouseUp(event) {
+        this.mouseX = event.clientX;
+        this.mouseY = event.clientY;
+        document.removeEventListener('mousemove', this.__handleMouse);
+        
+    }
+
+    __handleMouse(event) {
+        this.mouseX = event.clientX;
+        this.mouseY = event.clientY;
+    }
 
 
 
-						let {x, y} = this.myMouseTracker.getMousePosition()
-						console.log(`============================================================================`)
-						console.log(`getMousePosition(): ${x}, ${y}`)
+    __handleTouchDown(event) {
+        const touch = event.touches[0];
+        this.mouseX = touch.clientX;
+        this.mouseY = touch.clientY;
+        document.addEventListener('touchmove', this.__handleTouch, { passive: false });
+        
+    }
 
-						if (x != null){
-							if (this.mouseX == null){
-								this.mouseX = x;
-								this.mouseY = y;
+    __handleTouchUp(event) {
+        const touch = event.touches[0];
+        this.mouseX = touch.clientX;
+        this.mouseY = touch.clientY;
+        document.removeEventListener('touchmove', this.__handleTouch, { passive: false });
+        
+    }
 
-							}
-							else if (this.mouseXNew == null){
-								this.mouseXNew = x;
-								this.mouseYNew = y;
-							}
+    __handleTouch(event) {
+        const touch = event.touches[0];
+        this.mouseX = touch.clientX;
+        this.mouseY = touch.clientY;
+    }
 
-							else {
-								this.differenceY = this.mouseYNew - this.mouseY
-								this.differenceX = this.mouseXNew - this.mouseX
-								console.log(` {this.differenceX}, {this.differenceY} ${this.differenceX}, y ${this.differenceY}, `)
-								console.log(`При x ${this.mouseX }, y ${this.mouseY}, x ${this.mouseXNew }, y ${this.mouseYNew}, `)
 
-								this.mouseX = this.mouseXNew
-								this.mouseY = this.mouseYNew
-								this.mouseXNew = x;
-								this.mouseYNew = y;
 
-															}
-						}
+    startEvents() {
 
-					},100)
+                document.addEventListener('mousedown', this.__handleMouseDown);
+                document.addEventListener('mouseup', this.__handleMouseUp);
 
-	}
+                document.addEventListener('touchstart', this.__handleTouch, { passive: false });                
+                document.addEventListener('touchend', this.__handleTouchEnd);
+        }
 
-	__eventFunctionUp(event){
+        // Останавливаем отслеживание событий
+    stopEvents() {
+                document.removeEventListener('mousedown', this.__handleMouseDown);
+                document.removeEventListener('mouseup', this.__handleMouseUp);
 
-				clearInterval(this.intervalId);
-				this.mouseX = null;
-		        this.mouseY = null;
-		        this.mouseXNew = null;
-		        this.mouseYNew = null;
+                document.removeEventListener('touchstart', this.__handleTouch, { passive: false });                
+                document.removeEventListener('touchend', this.__handleTouchEnd);
+                this.mouseX = null;
+                this.mouseY = null;
+        }
 
-					
-
-	}
-
-	startEvents() {
-
-				document.addEventListener('mousedown', this.__eventFunctionDown);
-
-				document.addEventListener('mouseup', this.__eventFunctionUp);
-		}
-
-		// Останавливаем отслеживание событий
-	stopEvents() {
-				document.removeEventListener('mousedown', this.__eventFunctionDown);
-
-				document.removeEventListener('mouseup', this.__eventFunctionUp);
-		}
-
-	difference(){
-		let work
-		if (this.myMouseTracker == null || this.mouseXNew == null){
-			work = false
-		}
-		else {
-			work = true
-		}
-
-		return [this.differenceX, this.differenceY, work];
-	}
+    getPos(){
+        return [this.mouseX, this.mouseY]
+    }
 
 
 
@@ -175,7 +153,9 @@ class Slider{
 
 
 				this.mymouseTracker = new MouseTracker();
-				this.mouseDown = null;
+
+				this.mymouseTouchDown = new MouseTouchDown()
+				this.mouseDownOld = null;
 				
 
 		}
@@ -280,8 +260,10 @@ class Slider{
 		mousemove() {
 				this.content.addEventListener('mouseenter', (event) => {
 
-								this.mouseDown = new MouseDown()
-								this.mouseDown.startEvents()
+
+								this.mymouseTouchDown.startEvents()
+								
+
 
 								this.mymouseTracker.startEvents()
 								let intervalMainId = setInterval(() => { 
@@ -293,9 +275,24 @@ class Slider{
 												// Объявляем переменную intervalId за пределами условий, чтобы она была доступна для clearInterval()
 												let width = window.innerWidth * 0.05;
 
-												let mouseDownRes = this.mouseDown.difference()
-												if (mouseDownRes[2] == true) {
-													this.addToLeft(mouseDownRes[0])
+												let mouseDownRes = this.mymouseTouchDown.getPos()
+
+												//console.log(mouseDownRes)
+												
+
+												if (mouseDownRes != null && mouseDownRes[0] != null) {
+													
+													console.log(mouseDownRes)
+													console.log(this.mouseDownOld)
+													if (this.mouseDownOld == null) {this.mouseDownOld = mouseDownRes[0]}
+													else {
+														console.log(`addToLeft ${mouseDownRes[0]}-${this.mouseDownOld} = ${mouseDownRes[0]-this.mouseDownOld}`)
+														let res = mouseDownRes[0]-this.mouseDownOld
+														this.mouseDownOld = mouseDownRes[0]
+														this.addToLeft(res)
+														
+													}
+													
 												}
 					
 
@@ -312,16 +309,15 @@ class Slider{
 												//this.addToLeft(x)
 																																																				}
 
-								}, 1);
+								}, 100);
 
 
 				this.content.addEventListener('mouseleave', () => {
 
-								if (this.mouseDown != null) {
-									this.mouseDown.stopEvents()
-									this.mymouseTracker.stopEvents()
-									this.mouseDown = null;
-								}
+								this.mymouseTouchDown.stopEvents()
+								this.mymouseTracker.stopEvents()
+								this.mouseDownOld = null;
+
 								
 								
 								clearInterval(intervalMainId);  // Останавливаем setInterval
