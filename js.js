@@ -77,6 +77,13 @@ class MouseDown extends MouseTracker{
 					this.myMouseTracker.startEvents()
 					console.log('mousedown')
 					this.intervalId = setInterval(() => {
+						if (this.myMouseTracker == null) {
+				            clearInterval(this.intervalId); // Остановка таймера, если myMouseTracker больше не существует
+				            return;
+				        }
+
+
+
 						let {x, y} = this.myMouseTracker.getMousePosition()
 						console.log(`============================================================================`)
 						console.log(`getMousePosition(): ${x}, ${y}`)
@@ -95,13 +102,14 @@ class MouseDown extends MouseTracker{
 							else {
 								this.differenceY = this.mouseYNew - this.mouseY
 								this.differenceX = this.mouseXNew - this.mouseX
+								console.log(` {this.differenceX}, {this.differenceY} ${this.differenceX}, y ${this.differenceY}, `)
+								console.log(`При x ${this.mouseX }, y ${this.mouseY}, x ${this.mouseXNew }, y ${this.mouseYNew}, `)
+
 								this.mouseX = this.mouseXNew
 								this.mouseY = this.mouseYNew
 								this.mouseXNew = x;
 								this.mouseYNew = y;
-								console.log(`Позиционирование по пиксельно x ${this.differenceX}, y ${this.differenceY}, `)
-								console.log(`x ${this.mouseY }, y ${this.mouseX}, x ${this.mouseYNew }, y ${this.mouseXNew}, `)
-							}
+															}
 						}
 
 					},200)
