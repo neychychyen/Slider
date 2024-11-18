@@ -109,6 +109,7 @@ class MouseDown extends MouseTracker{
 								this.mouseY = this.mouseYNew
 								this.mouseXNew = x;
 								this.mouseYNew = y;
+								
 															}
 						}
 
