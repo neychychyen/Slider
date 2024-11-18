@@ -146,10 +146,48 @@ class MouseTouchDown extends MouseTracker{
     getPos(){
         return [this.mouseX, this.mouseY, this.click]
     }
-
-
-
 }
+
+class TouchDown extends MouseTracker {
+
+    constructor() {
+                super();
+                this.__handleTouch = this.__handleTouch.bind(this);
+                this.works = false
+        }
+
+
+    __handleTouch(event) {
+        const touch = event.touches[0];
+        this.mouseX = touch.clientX;
+        this.mouseY = touch.clientY;
+        //console.log(`this.mouseX ${this.mouseX}, ${this.mouseY}`)
+    }
+
+
+
+    startEvents() {
+                
+                this.works = true
+                document.addEventListener('touchmove', this.__handleTouch, { passive: false });                
+                //console.log('startEvents() Запущен')
+        }
+
+        // Останавливаем отслеживание событий
+    stopEvents() {
+
+                this.works = false
+                document.removeEventListener('touchmove', this.__handleTouch, { passive: false });                
+                this.mouseX = null;
+                this.mouseY = null;
+        }
+
+    getPos(){
+        return [this.mouseX, this.mouseY, this.works]
+    }
+}
+
+
 
 
 class Slider{
@@ -166,6 +204,10 @@ class Slider{
 
 				this.mymouseTouchDown = new MouseTouchDown()
 				this.mouseDownOld = null;
+
+
+                this.myToucheDown = new TouchDown()
+                this.CurPos = null
 				
 
 		}
@@ -269,11 +311,8 @@ class Slider{
 
 		mousemove() {
 
-			//Для компьютерной версии
-			if (window.matchMedia('(hover: none)').matches) {
-				
-			}
-				
+			//Для hover: hover версии (пк)
+			if (window.matchMedia('(hover: hover)').matches) {
 
 				this.content.addEventListener('mouseenter', (event) => {
 
@@ -353,17 +392,71 @@ class Slider{
 								
 								clearInterval(intervalMainId);  // Останавливаем setInterval
 								
-				});
+				});});
 
-		});
-		}
-
+			}
 
 
-}
+            //Для hover: none версии (мобилки)
+            else if (window.matchMedia('(hover: none)').matches){
+
+                let boundStartEvents = (elem) => {
+                        this.myToucheDown.startEvents(elem)
+                        
+                        this.curPos = null;
+                        //Логика 
+                        let intervalMainId = setInterval(() => {
+                            let result = this.myToucheDown.getPos()
+                            if (result[0] != null){
+                                if (this.curPos == null){this.curPos = result[0]}
+
+                                else{
+                                    //console.log(`result[0] ${result[0]} - curPos ${this.curPos} = ${result[0] - this.curPos}`)
+
+                                    console.log(`result[0] - this.curPos: ${result[0] - this.curPos}`)
+                                    this.addToLeft(result[0] - this.curPos)
+                                    this.curPos = result[0]
+                                }
+
+                            }
 
 
-const content = document.querySelector('.content');
+                        }, 100)
+
+                    }
+            
+				this.content.addEventListener('touchstart', boundStartEvents, { passive: false })
+
+                document.addEventListener('touchend', (event) => {
+
+                    console.log('Отпустили палец')
+                    //console.log(`if this.myToucheDown.getPos[2] == true ${this.myToucheDown.getPos()[2]}`)
+                    if (this.myToucheDown.getPos()[2] == true) {
+                        //console.log('x.getPos[2] == true')
+                        this.content.removeEventListener('touchstart', boundStartEvents)
+                        this.myToucheDown.stopEvents()
+                        this.content.addEventListener('touchstart', boundStartEvents, { passive: false })
+                        this.curPos = null;
+                        //console.log(`this.myToucheDown.getPos ${this.myToucheDown.getPos[0]}, ${this.myToucheDown.getPos[1]}, ${this.myToucheDown.getPos[2]}`)
+                    }
+                })
+
+
+                    }
+
+
+            
+            }
+
+}   
+    
+
+
+
+
+
+
+const content = document.querySelector('.slider-content');
 const nested = document.querySelector('.nested');
 
 
@@ -372,6 +465,9 @@ MenuSlider = new Slider(content, nested)
 
 
 MenuSlider.mousemove()
+
+
+
 
 
 
