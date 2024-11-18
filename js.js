@@ -28,11 +28,15 @@ class MouseTracker extends Events{
 
 		startEvents() {
 				document.addEventListener('mousemove', this.__handleMouse);
+				document.addEventListener('touchmove', this.__handleTouchMove, { passive: false });
+
+
 		}
 
 		// Останавливаем отслеживание событий
 		stopEvents() {
 				document.removeEventListener('mousemove', this.__handleMouse);
+				document.removeEventListener('touchmove', this.__handleTouchMove);
 		}
 
 		// Обработчик события мыши
@@ -58,7 +62,7 @@ class MouseDown extends MouseTracker{
 				this.mouseXNew = null;
 				this.mouseYNew = null;
 				this.intervalId = null;
-				this.myMouseTracker
+				this.myMouseTracker = new MouseTracker()
 				this.differenceY
 				this.differenceX
 
@@ -73,7 +77,7 @@ class MouseDown extends MouseTracker{
 		}
 
 	__eventFunctionDown(event){
-					this.myMouseTracker = new MouseTracker()
+					
 					this.myMouseTracker.startEvents()
 					console.log('mousedown')
 					this.intervalId = setInterval(() => {
@@ -109,24 +113,22 @@ class MouseDown extends MouseTracker{
 								this.mouseY = this.mouseYNew
 								this.mouseXNew = x;
 								this.mouseYNew = y;
-								
+
 															}
 						}
 
-					},200)
+					},100)
 
 	}
 
 	__eventFunctionUp(event){
-				setTimeout(() => {
-					console.log('mouseup')
-					this.myMouseTracker.stopEvents()
-					this.myMouseTracker = null
-					clearInterval(this.intervalId);
 
+				clearInterval(this.intervalId);
+				this.mouseX = null;
+		        this.mouseY = null;
+		        this.mouseXNew = null;
+		        this.mouseYNew = null;
 
-				}, 250
-					)
 					
 
 	}
