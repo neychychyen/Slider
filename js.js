@@ -177,7 +177,7 @@ class TouchDown extends MouseTracker {
     stopEvents() {
 
                 this.works = false
-                document.removeEventListener('touchmove', this.__handleTouch, { passive: false });                
+                document.removeEventListener('touchmove', this.__handleTouch);                
                 this.mouseX = null;
                 this.mouseY = null;
         }
@@ -309,7 +309,50 @@ class Slider{
 		
 		}
 
+
+		boundStartEvents = (elem) => {
+                        this.myToucheDown.startEvents(elem)
+                        
+                        this.curPos = null;
+                        //Логика 
+                        let intervalMainId = setInterval(() => {
+                            let result = this.myToucheDown.getPos()
+                            if (result[0] != null){
+                                if (this.curPos == null){this.curPos = result[0]}
+
+                                else{
+                                    //console.log(`result[0] ${result[0]} - curPos ${this.curPos} = ${result[0] - this.curPos}`)
+
+                                    console.log(`${result[0]} - ${this.curPos}: ${result[0] - this.curPos}`)
+                                    this.addToLeft(result[0] - this.curPos)
+                                    this.curPos = result[0]
+                                }
+
+                            }
+
+
+                        }, 100)
+
+                    }
+
 		mousemove() {
+
+			let presets = (event) => {
+
+				console.log('presets')
+				document.addEventListener('touchend', (event) => {
+
+                    console.log('Отпустили палец')
+                    //console.log(`if this.myToucheDown.getPos[2] == true ${this.myToucheDown.getPos()[2]}`)
+                    if (this.myToucheDown.getPos()[2] == true) {
+                        //console.log('x.getPos[2] == true')
+                        this.myToucheDown.stopEvents()
+                        this.curPos = null;
+                        //console.log(`this.myToucheDown.getPos ${this.myToucheDown.getPos[0]}, ${this.myToucheDown.getPos[1]}, ${this.myToucheDown.getPos[2]}`)
+                    }
+                })}
+
+			presets()
 
 			//Для hover: hover версии (пк)
 			if (window.matchMedia('(hover: hover)').matches) {
@@ -400,46 +443,11 @@ class Slider{
             //Для hover: none версии (мобилки)
             else if (window.matchMedia('(hover: none)').matches){
 
-                let boundStartEvents = (elem) => {
-                        this.myToucheDown.startEvents(elem)
-                        
-                        this.curPos = null;
-                        //Логика 
-                        let intervalMainId = setInterval(() => {
-                            let result = this.myToucheDown.getPos()
-                            if (result[0] != null){
-                                if (this.curPos == null){this.curPos = result[0]}
-
-                                else{
-                                    //console.log(`result[0] ${result[0]} - curPos ${this.curPos} = ${result[0] - this.curPos}`)
-
-                                    console.log(`result[0] - this.curPos: ${result[0] - this.curPos}`)
-                                    this.addToLeft(result[0] - this.curPos)
-                                    this.curPos = result[0]
-                                }
-
-                            }
-
-
-                        }, 100)
-
-                    }
+                 
             
-				this.content.addEventListener('touchstart', boundStartEvents, { passive: false })
+				this.content.addEventListener('touchstart', this.boundStartEvents, { passive: false })
 
-                document.addEventListener('touchend', (event) => {
-
-                    console.log('Отпустили палец')
-                    //console.log(`if this.myToucheDown.getPos[2] == true ${this.myToucheDown.getPos()[2]}`)
-                    if (this.myToucheDown.getPos()[2] == true) {
-                        //console.log('x.getPos[2] == true')
-                        this.content.removeEventListener('touchstart', boundStartEvents)
-                        this.myToucheDown.stopEvents()
-                        this.content.addEventListener('touchstart', boundStartEvents, { passive: false })
-                        this.curPos = null;
-                        //console.log(`this.myToucheDown.getPos ${this.myToucheDown.getPos[0]}, ${this.myToucheDown.getPos[1]}, ${this.myToucheDown.getPos[2]}`)
-                    }
-                })
+                
 
 
                     }
