@@ -1,35 +1,11 @@
-class MouseTouchDown2 extends MouseTracker{
+class MouseTouch extends MouseTracker{
 
     constructor() {
                 super();
-
-                this.__handleMouseDown = this.__handleMouseDown.bind(this);
-                this.__handleMouseUp = this.__handleMouseUp.bind(this);
-                this.__handleMouse = this.__handleMouse.bind(this);
                 this.__handleTouchDown = this.__handleTouchDown.bind(this);
                 this.__handleTouchUp = this.__handleTouchUp.bind(this);
                 this.__handleTouch = this.__handleTouch.bind(this);
         }
-
-    __handleMouseDown(event) {
-        this.mouseX = event.clientX;
-        this.mouseY = event.clientY;
-        document.addEventListener('mousemove', this.__handleMouse);
-        
-    }
-
-    __handleMouseUp(event) {
-        this.mouseX = event.clientX;
-        this.mouseY = event.clientY;
-        document.removeEventListener('mousemove', this.__handleMouse);
-        
-    }
-
-    __handleMouse(event) {
-        this.mouseX = event.clientX;
-        this.mouseY = event.clientY;
-    }
-
 
 
     __handleTouchDown(event) {

@@ -95,6 +95,7 @@ class MouseTouchDown extends MouseTracker{
 
 
     __handleTouchDown(event) {
+    	console.log('__handleTouchDown(event)')
     	this.click = true
         const touch = event.touches[0];
         this.mouseX = touch.clientX;
@@ -116,6 +117,8 @@ class MouseTouchDown extends MouseTracker{
         const touch = event.touches[0];
         this.mouseX = touch.clientX;
         this.mouseY = touch.clientY;
+    	//console.log(` this.mouseX ${this.mouseX}, this.mouseY ${this.mouseY}`)
+
     }
 
 
@@ -125,7 +128,7 @@ class MouseTouchDown extends MouseTracker{
                 document.addEventListener('mousedown', this.__handleMouseDown);
                 document.addEventListener('mouseup', this.__handleMouseUp);
 
-                document.addEventListener('touchstart', this.__handleTouch, { passive: false });                
+                document.addEventListener('touchstart', this.__handleTouchDown, { passive: false });                
                 document.addEventListener('touchend', this.__handleTouchEnd);
         }
 
@@ -134,7 +137,7 @@ class MouseTouchDown extends MouseTracker{
                 document.removeEventListener('mousedown', this.__handleMouseDown);
                 document.removeEventListener('mouseup', this.__handleMouseUp);
 
-                document.removeEventListener('touchstart', this.__handleTouch, { passive: false });                
+                document.removeEventListener('touchstart', this.__handleTouchDown, { passive: false });                
                 document.removeEventListener('touchend', this.__handleTouchEnd);
                 this.mouseX = null;
                 this.mouseY = null;
@@ -270,10 +273,12 @@ class Slider{
 
 								this.mymouseTouchDown.startEvents()
 								
-
-
+								console.log('enter mousemove()')
+									
 								this.mymouseTracker.startEvents()
 								let intervalMainId = setInterval(() => { 
+
+
 
 												let {x, y} = this.getMousePosition()
 												let contentWidth = this.content.offsetWidth;
@@ -362,6 +367,7 @@ MenuSlider = new Slider(content, nested)
 MenuSlider.mousemove()
 
 
-
+let x = new MouseTouchDown()
+x.startEvents()
 
 

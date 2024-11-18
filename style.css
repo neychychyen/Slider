@@ -4,7 +4,7 @@
   box-sizing: border-box; /* Убедитесь, что padding входит в общую ширину */
 
   scrollbar-width: thin;
-  scrollbar-color: black hsl(0 0% 20%);
+  scrollbar-color: red hsl(0 0% 20%);
 
 }
 
