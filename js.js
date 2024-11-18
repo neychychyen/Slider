@@ -66,9 +66,11 @@ class MouseTouchDown extends MouseTracker{
                 this.__handleTouchDown = this.__handleTouchDown.bind(this);
                 this.__handleTouchUp = this.__handleTouchUp.bind(this);
                 this.__handleTouch = this.__handleTouch.bind(this);
+                this.click = false
         }
 
     __handleMouseDown(event) {
+    	this.click = true
         this.mouseX = event.clientX;
         this.mouseY = event.clientY;
         document.addEventListener('mousemove', this.__handleMouse);
@@ -76,9 +78,12 @@ class MouseTouchDown extends MouseTracker{
     }
 
     __handleMouseUp(event) {
+    	this.click = false
+    	console.log("'document.removeEventListener('mousemove', this.__handleMouse);")
         this.mouseX = event.clientX;
         this.mouseY = event.clientY;
         document.removeEventListener('mousemove', this.__handleMouse);
+
         
     }
 
@@ -90,6 +95,7 @@ class MouseTouchDown extends MouseTracker{
 
 
     __handleTouchDown(event) {
+    	this.click = true
         const touch = event.touches[0];
         this.mouseX = touch.clientX;
         this.mouseY = touch.clientY;
@@ -98,6 +104,7 @@ class MouseTouchDown extends MouseTracker{
     }
 
     __handleTouchUp(event) {
+    	this.click = false
         const touch = event.touches[0];
         this.mouseX = touch.clientX;
         this.mouseY = touch.clientY;
@@ -134,7 +141,7 @@ class MouseTouchDown extends MouseTracker{
         }
 
     getPos(){
-        return [this.mouseX, this.mouseY]
+        return [this.mouseX, this.mouseY, this.click]
     }
 
 
@@ -286,10 +293,22 @@ class Slider{
 													console.log(this.mouseDownOld)
 													if (this.mouseDownOld == null) {this.mouseDownOld = mouseDownRes[0]}
 													else {
-														console.log(`addToLeft ${mouseDownRes[0]}-${this.mouseDownOld} = ${mouseDownRes[0]-this.mouseDownOld}`)
-														let res = mouseDownRes[0]-this.mouseDownOld
-														this.mouseDownOld = mouseDownRes[0]
-														this.addToLeft(res)
+
+														if (mouseDownRes[2] == false) {
+															this.mouseDownOld = null
+															this.mymouseTouchDown.stopEvents()
+															this.mymouseTouchDown.startEvents()
+
+														}
+														else {
+
+															console.log(`addToLeft ${mouseDownRes[0]}-${this.mouseDownOld} = ${mouseDownRes[0]-this.mouseDownOld}`)
+															let res = mouseDownRes[0]-this.mouseDownOld
+															this.mouseDownOld = mouseDownRes[0]
+															this.addToLeft(res)
+
+														}
+														
 														
 													}
 													
