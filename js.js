@@ -304,6 +304,13 @@ class Slider{
 
 
 		start() {
+
+			let name
+			
+			let objectdown
+			let objectup
+			let objectenter
+			let objectleave
 			//console.log('enter start()')
 			if ('ontouchstart' in window) { //window.matchMedia('(hover: none)').matches || 
 				alert("Должно работать")
@@ -369,12 +376,7 @@ class Slider{
 			}
 
 
-			let name
 			
-			let objectdown
-			let objectup
-			let objectenter
-			let objectleave
 
 			if (window.matchMedia('(hover: hover)').matches) {
 				console.log('(hover: hover)')
