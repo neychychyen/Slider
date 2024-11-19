@@ -51,7 +51,7 @@ class EventManager {
 
     // Метод для удаления всех событий
     removeAllEvents() {
-        console.log('Удаление всех элементов');
+        //console.log('Удаление всех элементов');
         // Перебираем все добавленные обработчики и удаляем их
         for (const name in this.eventListeners) {
             this.removeEvent(name)
@@ -80,7 +80,7 @@ class MouseTracker{
 		}
 
 		startEvents() {
-			console.log('start MouseTracker')
+			//console.log('start MouseTracker')
 			this.eventName = this.eventManager.addEvent(document, 'mousemove', this.__handleMouse);
 			//console.log('start MouseTracker this.eventName', this.eventName)
 
@@ -89,7 +89,7 @@ class MouseTracker{
 
 		// Останавливаем отслеживание событий
 		stopEvents() {
-				console.log('stopEvents MouseTracker')
+				//console.log('stopEvents MouseTracker')
 				this.eventManager.removeEvent(this.eventName);
 				this.eventName = null
 				this.mouseX = null;
@@ -117,64 +117,15 @@ class MouseTracker{
 }
 
 
-class TouchTracker{
-		constructor(eventManager) {
-				this.mouseX = null;
-				this.mouseY = null;
-
-				this.eventManager = eventManager
-				this.eventName
-
-				this.__handleMouse = this.__handleMouse.bind(this);
-				
-		}
-
-		startEvents() {
-			console.log('start MouseTracker')
-			this.eventName = this.eventManager.addEvent(document, 'touchmove', this.__handleMouse);
-			//console.log('start MouseTracker this.eventName', this.eventName)
 
 
-		}
-
-		// Останавливаем отслеживание событий
-		stopEvents() {
-				console.log('stopEvents MouseTracker')
-				this.eventManager.removeEvent(this.eventName);
-				this.eventName = null
-				this.mouseX = null;
-				this.mouseY = null;
-		}
-
-		// Обработчик события мыши
-		__handleMouse(event) {
-			if (event.touches && event.touches.length > 0) {
-			    this.mouseX = event.touches[0].clientX; // Координата X первого касания
-			    this.mouseY = event.touches[0].clientY; // Координата Y первого касания
-				}
-		}
-
-		// Функция для получения текущих координат мыши
-		getPos() {
-				return { x: this.mouseX, y: this.mouseY };
-		}
-
-		console_log(){
-    	let intervalMainId = setInterval(() => {
-            console.log(`MouseTracker class this.mouseX ${this.mouseX}, this.mouseY ${this.mouseY}`)
-        }, 100)
-    }
-}
-
-
-
-class TouchTracker2 extends MouseTracker{
+class TouchTracker extends MouseTracker{
 	constructor(eventManager) {
 		super(eventManager)
 	}
 
 	startEvents() {
-			console.log('start touchTracker')
+			//console.log('start touchTracker')
 			this.eventName = this.eventManager.addEvent(document, 'touchmove', this.__handleMouse);
 			//console.log('start MouseTracker this.eventName', this.eventName)
 		}
@@ -236,6 +187,8 @@ class Slider{
 				this.eventManagerDict = {}
 
 
+
+
 				this.content = content;
 				this.nested = nested;
 
@@ -243,7 +196,8 @@ class Slider{
 				this.bias = 40 // Отклонение для правого края
 
 
-				this.MouseTracker = new MouseTracker(eventmanager);
+				this.MouseTracker = new MouseTracker(eventmanager)
+				this.TouchTracker = new TouchTracker(eventManager)
 				this.curPos = null
 
                 this.intervalManager = intervalManager // Используется для  MouseDown и ToucheDown
@@ -461,91 +415,52 @@ class Slider{
 				objectenter = 'touchstart'
 				objectleave = 'touchend'
 
-				let forUnHoverable = () => {
-					let enter_preset = (event) => {
+				let forUnHoverable = () =>	{
 
-						this.MouseTracker.startEvents()
+					let press_preset = (event) => {
+						console.log('Нажали')
+						this.TouchTracker.startEvents()
 
-						let press_preset = (event) => {
+						let interval_preset = () => { 
+							console.log('this.intervalMainId')
+							let {x, y} = this.TouchTracker.getPos()
 
-							
-							//console.log('Создаем this.intervalMainId')
+							//console.log(this.curPos, x)
+                            if (this.curPos == null){
+                            	//console.log(`curPos будет равен ${x}`)
+                            	this.curPos = x
+                            	//console.log(this.curPos)
+                            }
 
-							let interval_preset = () => {
-								//console.log(this.intervalMainId)
-								let {x, y} = this.MouseTracker.getPos()
+                            else{
+                                //console.log(`result[0] ${result[0]} - curPos ${this.curPos} = ${result[0] - this.curPos}`)
 
-								//console.log(this.curPos, x)
-	                            if (this.curPos == null){
-	                            	//console.log(`curPos будет равен ${x}`)
-	                            	this.curPos = x
-	                            	//console.log(this.curPos)
-	                            }
-
-	                            else{
-	                                //console.log(`result[0] ${result[0]} - curPos ${this.curPos} = ${result[0] - this.curPos}`)
-
-	                                //console.log(`${x} - ${this.curPos}: ${x - this.curPos}`)
-	                                this.addToLeft(x - this.curPos)
-	                                this.curPos = x
-	                                }
-							}
-
-							if (this.currentInterval === null){
-								this.currentInterval = this.intervalManager.setInterval(interval_preset , 100)
-								//console.log('this.currentInterval ', this.currentInterval)
-							}
-
-						} 
-
-						name = this.eventManager.addEvent(this.content, objectdown, press_preset)
-						this.eventManagerDict[objectdown] = name
-
-						let mouseUp_preset = (event) => {
-							//console.log('mouseUp_presett')
-							
-							if (this.currentInterval !== null){
-								this.intervalManager.clearSingleInterval(this.currentInterval)
-								this.currentInterval = null
-								let new_name = this.eventManagerDict[objectdown]
-
-								this.eventManager.removeEvent(new_name)
-
-								delete this.eventManagerDict[objectdown]
-
-								this.curPos = null;
-								}
-
+                                //console.log(`${x} - ${this.curPos}: ${x - this.curPos}`)
+                                this.addToLeft(x - this.curPos)
+                                this.curPos = x
+                                } 
 						}
 
+						if (this.currentInterval === null){
+								console.log('currentInterval === null')
+								this.currentInterval = this.intervalManager.setInterval(interval_preset , 100)
+						}//
 
+					}
+					name = this.eventManager.addEvent(this.content, objectenter, press_preset)
+					this.eventManagerDict[objectenter] = name
 
-						//console.log('enter_preset')
-						
-						name = this.eventManager.addEvent(this.content, objectup, mouseUp_preset)
-						this.eventManagerDict[objectup] = name		
+					let unpress_preset = () => {
+						this.TouchTracker.stopEvents()
+						this.curPos = null
+						this.intervalManager.clearSingleInterval(this.currentInterval)
+						this.currentInterval = null//Удалить интервал
+					}
+
+					name = this.eventManager.addEvent(this.content, objectleave, unpress_preset)
+					this.eventManagerDict[objectleave] = name
 				}
-
-				let leave_preset = () => {
-					//console.log('Leave_preset')
-
-					this.MouseTracker.stopEvents()
-
-					this.eventManager.removeEvent(this.eventManagerDict[objectdown])	
-					delete this.eventManagerDict[objectdown]	
-
-					this.eventManager.removeEvent(this.eventManagerDict[objectup])	
-					delete this.eventManagerDict[objectup]					
-				}
-
-
-				name = this.eventManager.addEvent(this.content, objectenter, enter_preset)
-				this.eventManagerDict[objectenter] = name
-
-				name = this.eventManager.addEvent(this.content, objectleave, leave_preset)
-				this.eventManagerDict[objectleave] = name
-				}
-
+			
 				//start
 
 				forUnHoverable()
@@ -577,10 +492,7 @@ MenuSlider = new Slider(content, nested, eventManager, intervalManager)
 MenuSlider.start()
 
 
-if (window.matchMedia('(hover: none)').matches){
-	
 
-}
 
 
 

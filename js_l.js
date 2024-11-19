@@ -123,8 +123,4 @@ const eventManager = new EventManager(NameManager);
 if (window.matchMedia('(hover: none)').matches){}
 
 
-let x = new TouchTracker(eventManager)
-x.startEvents()
-x.console_log()
-
 
