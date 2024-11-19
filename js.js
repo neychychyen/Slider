@@ -83,7 +83,7 @@ class MouseTracker{
 		}
 
 		startEvents() {
-			//console.log('start MouseTracker')
+			console.log('start MouseTracker')
 			this.eventName = this.eventManager.addEvent(document, 'mousemove', this.__handleMouse);
 			//console.log('start MouseTracker this.eventName', this.eventName)
 
@@ -92,9 +92,11 @@ class MouseTracker{
 
 		// Останавливаем отслеживание событий
 		stopEvents() {
-				//console.log('stopEvents MouseTracker')
+				console.log('stopEvents MouseTracker')
 				this.eventManager.removeEvent(this.eventName);
 				this.eventName = null
+				this.mouseX = null;
+				this.mouseY = null;
 		}
 
 		// Обработчик события мыши
@@ -117,6 +119,25 @@ class MouseTracker{
     }
 }
 
+
+class TouchTracker extends MouseTracker{
+	constructor(eventManager) {
+		super(eventManager)
+	}
+
+	startEvents() {
+			console.log('start touchTracker')
+			this.eventName = this.eventManager.addEvent(document, 'touchmove', this.__handleMouse);
+			//console.log('start MouseTracker this.eventName', this.eventName)
+		}
+
+	__handleMouse(event) {
+		if (event.touches && event.touches.length > 0) {
+		    this.mouseX = event.touches[0].clientX; // Координата X первого касания
+		    this.mouseY = event.touches[0].clientY; // Координата Y первого касания
+			}
+		}
+}
 
 
 class IntervalManager {
@@ -156,113 +177,6 @@ class IntervalManager {
 }
 
 
-class MouseDown extends MouseTracker{
-
-    constructor(eventManager) {
-                super();
-
-                this.mousemoveEvent
-                this.mousedownEvent
-                this.mouseupEvent
-
-                this.eventManager = eventManager
-
-                this.__handleMouseDown = this.__handleMouseDown.bind(this);
-                this.__handleMouseUp = this.__handleMouseUp.bind(this);
-                this.__handleMouse = this.__handleMouse.bind(this);
-
-                this.intervalMainId
-        }
-
-    __handleMouse(event) {
-        this.mouseX = event.clientX;
-        this.mouseY = event.clientY;
-    }
-
-    __handleMouseDown(event) {
-    	this.click = true
-        this.__handleMouse(event)
-        this.mousemoveEvent = this.eventManager.addEvent(document, 'mousemove', this.__handleMouse);
-
-        
-    }
-
-    __handleMouseUp(event) {
-    	this.click = false
-    	this.__handleMouse(event)
-        this.eventManager.removeEvent(this.mousemoveEvent);
-
-        
-    }
-
-
-    startEvents() {
-
-                this.mousedownEvent = this.eventManager.addEvent(document, 'mousedown', this.__handleMouseDown);
-                this.mouseupEvent = this.eventManager.addEvent(document, 'mouseup', this.__handleMouseUp);
-
-        }
-
-        // Останавливаем отслеживание событий
-    stopEvents() {
-                this.eventManager.removeEvent(this.mousedownEvent);
-                this.eventManager.removeEvent(this.mouseupEvent);
-
-                this.mouseX = null;
-                this.mouseY = null;
-        }
-
-    getPos(){
-        return [this.mouseX, this.mouseY, this.click]
-    }
-}
-
-class TouchDown extends MouseTracker {
-
-    constructor(eventManager) {
-                super();
-
-                this.eventManager = eventManager
-                
-                this.touchmoveEvent
-
-
-                this.__handleTouch = this.__handleTouch.bind(this);
-                this.click = false
-        }
-
-
-    __handleTouch(event) {
-        const touch = event.touches[0];
-        this.mouseX = touch.clientX;
-        this.mouseY = touch.clientY;
-        //console.log(`this.mouseX ${this.mouseX}, ${this.mouseY}`)
-    }
-
-
-
-    startEvents() {
-                
-                this.click = true
-                this.touchmoveEvent = this.eventManager.addEvent(document, 'touchmove', this.__handleTouch, { passive: false });                
-                //console.log('startEvents() Запущен')
-        }
-
-        // Останавливаем отслеживание событий
-    stopEvents() {
-
-                this.click = false
-                this.mouseX = null;
-                this.mouseY = null;
-
-                this.eventManager.removeEvent(this.touchmoveEvent);                
-                
-        }
-
-    getPos(){
-        return [this.mouseX, this.mouseY, this.click]
-    }
-}
 
 
 
@@ -390,11 +304,114 @@ class Slider{
 			//console.log('enter start()')
 			let name
 			
-
+			let objectdown
+			let objectup
+			let objectenter
+			let objectleave
 
 			if (window.matchMedia('(hover: hover)').matches) {
+				console.log('(hover: hover)')
 
-				let enter_preset = (event) => {
+				objectdown = 'mousedown'
+				objectup = 'mouseup'
+				objectenter = 'mouseenter'
+				objectleave = 'mouseleave'
+
+				let forHoverable = () => {
+
+					let enter_preset = (event) => {
+
+						this.MouseTracker.startEvents()
+						let press_preset = (event) => {
+
+							
+							//console.log('Создаем this.intervalMainId')
+
+							let interval_preset = () => {
+								//console.log(this.intervalMainId)
+								let {x, y} = this.MouseTracker.getPos()
+
+								//console.log(this.curPos, x)
+	                            if (this.curPos == null){
+	                            	//console.log(`curPos будет равен ${x}`)
+	                            	this.curPos = x
+	                            	//console.log(this.curPos)
+	                            }
+
+	                            else{
+	                                //console.log(`result[0] ${result[0]} - curPos ${this.curPos} = ${result[0] - this.curPos}`)
+
+	                                //console.log(`${x} - ${this.curPos}: ${x - this.curPos}`)
+	                                this.addToLeft(x - this.curPos)
+	                                this.curPos = x
+	                                }
+							}
+
+							if (this.currentInterval === null){
+								this.currentInterval = this.intervalManager.setInterval(interval_preset , 100)
+								//console.log('this.currentInterval ', this.currentInterval)
+							}
+
+						} 
+
+						name = this.eventManager.addEvent(this.content, objectdown, press_preset)
+						this.eventManagerDict[objectdown] = name
+
+						let mouseUp_preset = (event) => {
+							//console.log('mouseUp_presett')
+							
+							if (this.currentInterval !== null){
+								this.intervalManager.clearSingleInterval(this.currentInterval)
+								this.currentInterval = null
+								let new_name = this.eventManagerDict[objectdown]
+
+								this.eventManager.removeEvent(new_name)
+
+								delete this.eventManagerDict[objectdown]
+
+								this.curPos = null;
+								}
+
+						}
+
+
+
+						//console.log('enter_preset')
+						
+						name = this.eventManager.addEvent(this.content, objectup, mouseUp_preset)
+						this.eventManagerDict[objectup] = name		
+				}
+
+				let leave_preset = () => {
+					//console.log('Leave_preset')
+
+					this.MouseTracker.stopEvents()
+
+					this.eventManager.removeEvent(this.eventManagerDict[objectdown])	
+					delete this.eventManagerDict[objectdown]	
+
+					this.eventManager.removeEvent(this.eventManagerDict[objectup])	
+					delete this.eventManagerDict[objectup]					
+				}
+
+
+				name = this.eventManager.addEvent(this.content, objectenter, enter_preset)
+				this.eventManagerDict[objectenter] = name
+
+				name = this.eventManager.addEvent(this.content, objectleave, leave_preset)
+				this.eventManagerDict[objectleave] = name
+				}
+
+				//start
+
+				forHoverable()
+			}
+			else if (window.matchMedia('(hover: none)').matches) {
+				objectenter = 'touchstart'
+				objectleave = 'touchend'
+
+				let forUnHoverable = () => {
+					let enter_preset = (event) => {
 
 						this.MouseTracker.startEvents()
 
@@ -430,8 +447,8 @@ class Slider{
 
 						} 
 
-						name = this.eventManager.addEvent(this.content, 'mousedown', press_preset)
-						this.eventManagerDict['mousedown'] = name
+						name = this.eventManager.addEvent(this.content, objectdown, press_preset)
+						this.eventManagerDict[objectdown] = name
 
 						let mouseUp_preset = (event) => {
 							//console.log('mouseUp_presett')
@@ -439,11 +456,11 @@ class Slider{
 							if (this.currentInterval !== null){
 								this.intervalManager.clearSingleInterval(this.currentInterval)
 								this.currentInterval = null
-								let new_name = this.eventManagerDict['mousedown']
+								let new_name = this.eventManagerDict[objectdown]
 
 								this.eventManager.removeEvent(new_name)
 
-								delete this.eventManagerDict['mousedown']
+								delete this.eventManagerDict[objectdown]
 
 								this.curPos = null;
 								}
@@ -454,10 +471,8 @@ class Slider{
 
 						//console.log('enter_preset')
 						
-						name = this.eventManager.addEvent(this.content, 'mouseup', mouseUp_preset)
-						this.eventManagerDict['mouseup'] = name
-								
-						
+						name = this.eventManager.addEvent(this.content, objectup, mouseUp_preset)
+						this.eventManagerDict[objectup] = name		
 				}
 
 				let leave_preset = () => {
@@ -465,21 +480,30 @@ class Slider{
 
 					this.MouseTracker.stopEvents()
 
-					this.eventManager.removeEvent(this.eventManagerDict['mousedown'])	
-					delete this.eventManagerDict['mousedown']	
+					this.eventManager.removeEvent(this.eventManagerDict[objectdown])	
+					delete this.eventManagerDict[objectdown]	
 
-					this.eventManager.removeEvent(this.eventManagerDict['mouseup'])	
-					delete this.eventManagerDict['mouseup']					
+					this.eventManager.removeEvent(this.eventManagerDict[objectup])	
+					delete this.eventManagerDict[objectup]					
 				}
 
 
-				name = this.eventManager.addEvent(this.content, 'mouseenter', enter_preset)
-				this.eventManagerDict['mouseenter'] = name
+				name = this.eventManager.addEvent(this.content, objectenter, enter_preset)
+				this.eventManagerDict[objectenter] = name
 
-				name = this.eventManager.addEvent(this.content, 'mouseleave', leave_preset)
-				this.eventManagerDict['mouseleave'] = name
+				name = this.eventManager.addEvent(this.content, objectleave, leave_preset)
+				this.eventManagerDict[objectleave] = name
+				}
+
+				//start
+
+				forUnHoverable()
+
 			}
+
+			
 		}
+		
 
 }   
     
@@ -501,6 +525,11 @@ MenuSlider = new Slider(content, nested, eventManager, intervalManager)
 
 MenuSlider.start()
 
+
+if (window.matchMedia('(hover: none)').matches){
+	
+
+}
 
 
 
