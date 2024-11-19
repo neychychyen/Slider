@@ -497,6 +497,29 @@ MenuSlider.start()
 if ('ontouchstart' in window) {
   // Это сенсорное устройство
   document.querySelector('.sensor').innerText = ('Это сенсорное устройство');
+  console.log('poshla_jara')
+	let na = new TouchTracker(eventManager)
+	let content2 = document.querySelector('.proverka');
+	na.startEvents()
+
+	for_interval = () =>{
+		let {x, y} = na.getPos()
+		content2.innerText = x + ' и ' + y;
+		console.log(x, ' u ', y)
+
+	}
+	intervalManager.setInterval(for_interval, 100)
+
+	let content3 = document.querySelector('.proverka2');
+
+	let f = (event) => {
+		event.preventDefault();
+		content3.innerText = event.touches[0].clientX + ' u ' + event.touches[0].clientY
+	}
+
+	eventManager.addEvent(document, 'touchstart', f, { passive: false });
+	eventManager.addEvent(document, 'touchmove', f, { passive: false });
+
 }
 
 
@@ -522,7 +545,7 @@ if (window.matchMedia('(hover: none)').matches){
 		content3.innerText = event.touches[0].clientX + ' u ' + event.touches[0].clientY
 	}
 
-	eventManager.addEvent(document, 'touchmove', f, { passive: false });
+	eventManager.addEvent(document, 'touchstart', f, { passive: false });
 
 }
 
