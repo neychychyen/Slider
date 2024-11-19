@@ -1,59 +1,130 @@
-class IntervalManager {
-  constructor() {
-    this.intervals = [];  // Массив для хранения всех идентификаторов интервалов
-  }
-
-  // Метод для установки интервала
-  setInterval(callback, delay) {
-    const intervalId = window.setInterval(callback, delay);  // Создаем интервал
-    this.intervals.push(intervalId);  // Добавляем его в массив
-    return intervalId;  // Возвращаем идентификатор интервала
-  }
-
-  // Метод для очистки одного интервала
-  clearSingleInterval(intervalId) {
-    const index = this.intervals.indexOf(intervalId);  // Ищем идентификатор
-    if (index !== -1) {
-      window.clearInterval(intervalId);  // Очищаем интервал
-      this.intervals.splice(index, 1);  // Удаляем идентификатор из списка
-  }
+class NameCreator{
+    constructor(prefix = 'EM') {
+        this.prefix = prefix
+        this.current_count = 0
     }
 
-  // Метод для очистки всех интервалов
-  clearIntervals() {
-    while (this.intervals.length !== 0){
-    for (let intervalId of this.intervals) {
-      this.clearSingleInterval(intervalId);  // Очищаем каждый интервал
-    }
-  }
-  }
 
-  // Метод для получения всех текущих интервалов
-  getAllIntervals() {
-    return this.intervals;
-  }
+    addName() {
+        this.current_count +=1
+        return this.prefix + this.current_count.toString()
+    }
 }
 
-// Пример использования
-const intervalManager = new IntervalManager();
+class EventManager {
+    constructor(NameCreator) {
+        this.eventListeners = {}; // Объект для хранения всех добавленных обработчиков
+        this.NameCreator = NameCreator
+    }
 
-// Создаем несколько интервалов
-intervalManager.setInterval(() => { console.log('Interval 1'); }, 1000);
-intervalManager.setInterval(() => { console.log('Interval 2'); }, 2000);
-intervalManager.setInterval(() => { console.log('Interval 3'); }, 3000);
-intervalManager.setInterval(() => { console.log('Interval 4'); }, 1000);
-intervalManager.setInterval(() => { console.log('Interval 5'); }, 2000);
-intervalManager.setInterval(() => { console.log('Interval 6'); }, 3000);
 
-// Получаем список всех интервалов
-console.log('All intervals:', intervalManager.getAllIntervals());  // Выводит [id1, id2, id3]
+    hasEvent(name){
+        if (this.eventListeners.hasOwnProperty(name)){return true}
+        else {return false}
 
-// Очищаем все интервалы
-setTimeout(() => {
-  intervalManager.clearIntervals();  // Очищаем все интервалы через 5 секунд
-}, 5000);
+    }
 
-// Проверяем список интервалов после их очистки
-setTimeout(() => {
-  console.log('Remaining intervals:', intervalManager.getAllIntervals());  // Выводит пустой массив []
-}, 6000);
+    // Метод для добавления события
+    addEvent(element, eventType, callback, options) {
+
+        let name = this.NameCreator.addName()
+
+        let eve = (event) => {callback(event);}
+        element.addEventListener(eventType, 
+            callback,
+             options);
+        // Сохраняем обработчик событий по имени
+        this.eventListeners[name] = { element, eventType, callback, options };
+        return name
+    }
+
+
+    removeEvent (name) {
+
+        if (this.hasEvent(name)) {
+                const listener = this.eventListeners[name];
+                listener.element.removeEventListener(listener.eventType, listener.callback, listener.options);
+            }
+
+      delete this.eventListeners[name]
+
+
+    }
+
+    // Метод для удаления всех событий
+    removeAllEvents() {
+        console.log('Удаление всех элементов');
+        // Перебираем все добавленные обработчики и удаляем их
+        for (const name in this.eventListeners) {
+            this.removeEvent(name)
+        }
+        // Очищаем объект
+
+    }
+
+    getAllKeys() {
+        return Object.keys(this.eventListeners);
+    }
+}
+
+
+class TouchTracker{
+        constructor(eventManager) {
+                this.mouseX = null;
+                this.mouseY = null;
+
+                this.eventManager = eventManager
+                this.eventName
+
+                this.__handleMouse = this.__handleMouse.bind(this);
+                
+        }
+
+        startEvents() {
+            console.log('start MouseTracker')
+            this.eventName = this.eventManager.addEvent(document, 'mousemove', this.__handleMouse);
+            //console.log('start MouseTracker this.eventName', this.eventName)
+
+
+        }
+
+        // Останавливаем отслеживание событий
+        stopEvents() {
+                console.log('stopEvents MouseTracker')
+                this.eventManager.removeEvent(this.eventName);
+                this.eventName = null
+                this.mouseX = null;
+                this.mouseY = null;
+        }
+
+        // Обработчик события мыши
+        __handleMouse(event) {
+                this.mouseX = event.clientX; // Координата X мыши
+                this.mouseY = event.clientY; // Координата Y мыши
+
+                //console.log(this.getMousePosition());
+        }
+
+        // Функция для получения текущих координат мыши
+        getPos() {
+                return { x: this.mouseX, y: this.mouseY };
+        }
+
+        console_log(){
+        let intervalMainId = setInterval(() => {
+            console.log(`MouseTracker class this.mouseX ${this.mouseX}, this.mouseY ${this.mouseY}`)
+        }, 100)
+    }
+}
+
+const NameManager = new NameCreator()
+const eventManager = new EventManager(NameManager);
+
+if (window.matchMedia('(hover: none)').matches){}
+
+
+let x = new TouchTracker(eventManager)
+x.startEvents()
+x.console_log()
+
+

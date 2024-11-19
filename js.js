@@ -30,10 +30,7 @@ class EventManager {
     addEvent(element, eventType, callback, options) {
 
     		let name = this.NameCreator.addName()
-        element.addEventListener(eventType, 
-        	(event) => {
-        callback(event); // Теперь event будет передан
-    }, options);
+        element.addEventListener(eventType, callback, options);
         // Сохраняем обработчик событий по имени
         this.eventListeners[name] = { element, eventType, callback, options };
         return name
@@ -120,7 +117,58 @@ class MouseTracker{
 }
 
 
-class TouchTracker extends MouseTracker{
+class TouchTracker{
+		constructor(eventManager) {
+				this.mouseX = null;
+				this.mouseY = null;
+
+				this.eventManager = eventManager
+				this.eventName
+
+				this.__handleMouse = this.__handleMouse.bind(this);
+				
+		}
+
+		startEvents() {
+			console.log('start MouseTracker')
+			this.eventName = this.eventManager.addEvent(document, 'touchmove', this.__handleMouse);
+			//console.log('start MouseTracker this.eventName', this.eventName)
+
+
+		}
+
+		// Останавливаем отслеживание событий
+		stopEvents() {
+				console.log('stopEvents MouseTracker')
+				this.eventManager.removeEvent(this.eventName);
+				this.eventName = null
+				this.mouseX = null;
+				this.mouseY = null;
+		}
+
+		// Обработчик события мыши
+		__handleMouse(event) {
+			if (event.touches && event.touches.length > 0) {
+			    this.mouseX = event.touches[0].clientX; // Координата X первого касания
+			    this.mouseY = event.touches[0].clientY; // Координата Y первого касания
+				}
+		}
+
+		// Функция для получения текущих координат мыши
+		getPos() {
+				return { x: this.mouseX, y: this.mouseY };
+		}
+
+		console_log(){
+    	let intervalMainId = setInterval(() => {
+            console.log(`MouseTracker class this.mouseX ${this.mouseX}, this.mouseY ${this.mouseY}`)
+        }, 100)
+    }
+}
+
+
+
+class TouchTracker2 extends MouseTracker{
 	constructor(eventManager) {
 		super(eventManager)
 	}
@@ -370,6 +418,9 @@ class Slider{
 								delete this.eventManagerDict[objectdown]
 
 								this.curPos = null;
+
+								name = this.eventManager.addEvent(this.content, objectdown, press_preset)
+								this.eventManagerDict[objectdown] = name
 								}
 
 						}
