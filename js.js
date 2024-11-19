@@ -494,8 +494,14 @@ MenuSlider = new Slider(content, nested, eventManager, intervalManager)
 
 MenuSlider.start()
 
+if ('ontouchstart' in window) {
+  // Это сенсорное устройство
+  document.querySelector('.sensor').innerText = ('Это сенсорное устройство');
+}
+
 
 if (window.matchMedia('(hover: none)').matches){
+
 	console.log('poshla_jara')
 	let na = new TouchTracker(eventManager)
 	let content2 = document.querySelector('.proverka');
@@ -508,6 +514,15 @@ if (window.matchMedia('(hover: none)').matches){
 
 	}
 	intervalManager.setInterval(for_interval, 100)
+
+	let content3 = document.querySelector('.proverka2');
+
+	let f = (event) => {
+		event.preventDefault();
+		content3.innerText = event.touches[0].clientX + ' u ' + event.touches[0].clientY
+	}
+
+	eventManager.addEvent(document, 'touchmove', f, { passive: false });
 
 }
 
