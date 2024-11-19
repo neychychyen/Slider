@@ -98,6 +98,7 @@ class MouseTracker{
 
 		// Обработчик события мыши
 		__handleMouse(event) {
+				event.preventDefault();
 				this.mouseX = event.clientX; // Координата X мыши
 				this.mouseY = event.clientY; // Координата Y мыши
 
@@ -126,7 +127,7 @@ class TouchTracker extends MouseTracker{
 
 	startEvents() {
 			//console.log('start touchTracker')
-			this.eventName = this.eventManager.addEvent(document, 'touchmove', this.__handleMouse);
+			this.eventName = this.eventManager.addEvent(document, 'touchmove', this.__handleMouse, { passive: false });
 			//console.log('start MouseTracker this.eventName', this.eventName)
 		}
 
@@ -304,10 +305,69 @@ class Slider{
 
 		start() {
 			//console.log('enter start()')
-			if ('ontouchstart' in window) {
-				alert("Должно cdsafda")
-				document.querySelector('.sensor').innerText = ('Это высерное устройствыва хуU20');
+			if ('ontouchstart' in window) { //window.matchMedia('(hover: none)').matches || 
+				alert("Должно работать")
+				document.querySelector('.sensor').innerText = ('Это сенсорное устройствыва хуU20');
+				objectenter = 'touchstart'
+				objectleave = 'touchend'
+
+				let forUnHoverable = () =>	{
+
+					let press_preset = (event) => {
+						event.preventDefault();
+						console.log('Нажали')
+						this.TouchTracker.startEvents()
+
+						let interval_preset = () => { 
+							console.log('this.intervalMainId')
+							let {x, y} = this.TouchTracker.getPos()
+
+							//console.log(this.curPos, x)
+                            if (this.curPos == null){
+                            	//console.log(`curPos будет равен ${x}`)
+                            	this.curPos = x
+                            	//console.log(this.curPos)
+                            }
+
+                            else{
+                                //console.log(`result[0] ${result[0]} - curPos ${this.curPos} = ${result[0] - this.curPos}`)
+
+                                //console.log(`${x} - ${this.curPos}: ${x - this.curPos}`)
+                                this.addToLeft(x - this.curPos)
+                                this.curPos = x
+
+                                let div = document.querySelector('.curentx');
+                                div.innerText = x;
+                                } 
+						}
+
+						if (this.currentInterval === null){
+								console.log('currentInterval === null')
+								this.currentInterval = this.intervalManager.setInterval(interval_preset , 100)
+						}//
+
+					}
+					name = this.eventManager.addEvent(this.content, objectenter, press_preset, { passive: false })
+					this.eventManagerDict[objectenter] = name
+
+					let unpress_preset = () => {
+						event.preventDefault();
+						this.TouchTracker.stopEvents()
+						this.curPos = null
+						this.intervalManager.clearSingleInterval(this.currentInterval)
+						this.currentInterval = null//Удалить интервал
+					}
+
+					name = this.eventManager.addEvent(this.content, objectleave, unpress_preset, { passive: false })
+					this.eventManagerDict[objectleave] = name
 				}
+			
+				//start
+
+				forUnHoverable()
+
+			}
+
 
 			let name
 			
@@ -416,67 +476,7 @@ class Slider{
 
 				forHoverable()
 			}
-			else if ('ontouchstart' in window) { //window.matchMedia('(hover: none)').matches || 
-				alert("Должно работать")
-				document.querySelector('.sensor').innerText = ('Это сенсорное устройствыва хуU20');
-				objectenter = 'touchstart'
-				objectleave = 'touchend'
-
-				let forUnHoverable = () =>	{
-
-					let press_preset = (event) => {
-						console.log('Нажали')
-						this.TouchTracker.startEvents()
-
-						let interval_preset = () => { 
-							console.log('this.intervalMainId')
-							let {x, y} = this.TouchTracker.getPos()
-
-							//console.log(this.curPos, x)
-                            if (this.curPos == null){
-                            	//console.log(`curPos будет равен ${x}`)
-                            	this.curPos = x
-                            	//console.log(this.curPos)
-                            }
-
-                            else{
-                                //console.log(`result[0] ${result[0]} - curPos ${this.curPos} = ${result[0] - this.curPos}`)
-
-                                //console.log(`${x} - ${this.curPos}: ${x - this.curPos}`)
-                                this.addToLeft(x - this.curPos)
-                                this.curPos = x
-
-                                let div = document.querySelector('.curentx');
-                                div.innerText = x;
-                                } 
-						}
-
-						if (this.currentInterval === null){
-								console.log('currentInterval === null')
-								this.currentInterval = this.intervalManager.setInterval(interval_preset , 100)
-						}//
-
-					}
-					name = this.eventManager.addEvent(this.content, objectenter, press_preset)
-					this.eventManagerDict[objectenter] = name
-
-					let unpress_preset = () => {
-						this.TouchTracker.stopEvents()
-						this.curPos = null
-						this.intervalManager.clearSingleInterval(this.currentInterval)
-						this.currentInterval = null//Удалить интервал
-					}
-
-					name = this.eventManager.addEvent(this.content, objectleave, unpress_preset)
-					this.eventManagerDict[objectleave] = name
-				}
 			
-				//start
-
-				forUnHoverable()
-
-			}
-
 			
 		}
 		
