@@ -496,6 +496,7 @@ MenuSlider = new Slider(content, nested, eventManager, intervalManager)
 MenuSlider.start()
 
 if ('ontouchstart' in window) {
+	alert("Должно работать")
   // Это сенсорное устройство
   document.querySelector('.sensor').innerText = ('Это сенсорное устройство');
   console.log('poshla_jara')
