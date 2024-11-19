@@ -495,6 +495,25 @@ MenuSlider = new Slider(content, nested, eventManager, intervalManager)
 MenuSlider.start()
 
 
+if (window.matchMedia('(hover: none)').matches){
+	console.log('poshla_jara')
+	let na = new TouchTracker(eventManager)
+	let content2 = document.querySelector('.proverka');
+	na.startEvents()
+
+	for_interval = () =>{
+		let {x, y} = na.getPos()
+		content2.innerText = x + ' и ' + y;
+		console.log(x, ' u ', y)
+
+	}
+	intervalManager.setInterval(for_interval, 100)
+
+}
+
+
+
+
 
 
 
