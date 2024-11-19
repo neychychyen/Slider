@@ -438,6 +438,9 @@ class Slider{
                                 //console.log(`${x} - ${this.curPos}: ${x - this.curPos}`)
                                 this.addToLeft(x - this.curPos)
                                 this.curPos = x
+
+                                let div = document.querySelector('.curentx');
+                                div.innerText = x;
                                 } 
 						}
 
