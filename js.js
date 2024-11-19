@@ -201,6 +201,7 @@ class Slider{
 				this.TouchTracker = new TouchTracker(eventManager)
 				this.curPos = null
 				this.passive = true // false Отключаает кастомный скролл при нажатии на элемент?
+				this.Accelerator = 5 // Усилитель руля для addleft
 
                 this.intervalManager = intervalManager // Используется для  MouseDown и ToucheDown
                 this.currentInterval = null
@@ -339,7 +340,7 @@ class Slider{
                                 //console.log(`result[0] ${result[0]} - curPos ${this.curPos} = ${result[0] - this.curPos}`)
 
                                 //console.log(`${x} - ${this.curPos}: ${x - this.curPos}`)
-                                this.addToLeft(x - this.curPos)
+                                this.addToLeft((x - this.curPos)*this.Accelerator)
                                 this.curPos = x
                                 } 
 						}
