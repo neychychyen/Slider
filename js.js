@@ -413,6 +413,7 @@ class Slider{
 			}
 			else if ('ontouchstart' in window) { //window.matchMedia('(hover: none)').matches || 
 				alert("Должно работать")
+				document.querySelector('.sensor').innerText = ('Это сенсорное устройствыва хуU20');
 				objectenter = 'touchstart'
 				objectleave = 'touchend'
 
@@ -498,7 +499,7 @@ MenuSlider.start()
 if ('ontouchstart' in window) {
 	alert("Должно работать")
   // Это сенсорное устройство
-  document.querySelector('.sensor').innerText = ('Это сенсорное устройство');
+  
   console.log('poshla_jara')
 	let na = new TouchTracker(eventManager)
 	let content2 = document.querySelector('.proverka');
