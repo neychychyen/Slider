@@ -411,7 +411,8 @@ class Slider{
 
 				forHoverable()
 			}
-			else if (window.matchMedia('(hover: none)').matches) {
+			else if ('ontouchstart' in window) { //window.matchMedia('(hover: none)').matches || 
+				alert("Должно работать")
 				objectenter = 'touchstart'
 				objectleave = 'touchend'
 
