@@ -312,9 +312,7 @@ class Slider{
 			let objectenter
 			let objectleave
 			//console.log('enter start()')
-			if ('ontouchstart' in window) { //window.matchMedia('(hover: none)').matches || 
-				alert("Должно работать")
-				document.querySelector('.sensor').innerText = ('Это сенсорное устройствыва хуU20');
+			if ('ontouchstart' in window || window.matchMedia('(hover: none)').matches) { //window.matchMedia('(hover: none)').matches || 
 				objectenter = 'touchstart'
 				objectleave = 'touchend'
 
@@ -322,11 +320,11 @@ class Slider{
 
 					let press_preset = (event) => {
 						event.preventDefault();
-						console.log('Нажали')
+						//console.log('Нажали')
 						this.TouchTracker.startEvents()
 
 						let interval_preset = () => { 
-							console.log('this.intervalMainId')
+							//console.log('this.intervalMainId')
 							let {x, y} = this.TouchTracker.getPos()
 
 							//console.log(this.curPos, x)
@@ -342,14 +340,11 @@ class Slider{
                                 //console.log(`${x} - ${this.curPos}: ${x - this.curPos}`)
                                 this.addToLeft(x - this.curPos)
                                 this.curPos = x
-
-                                let div = document.querySelector('.curentx');
-                                div.innerText = x;
                                 } 
 						}
 
 						if (this.currentInterval === null){
-								console.log('currentInterval === null')
+								//console.log('currentInterval === null')
 								this.currentInterval = this.intervalManager.setInterval(interval_preset , 100)
 						}//
 
@@ -503,61 +498,7 @@ MenuSlider = new Slider(content, nested, eventManager, intervalManager)
 
 MenuSlider.start()
 
-if ('ontouchstart' in window) {
-	alert("Должно работатsdaь")
-  // Это сенсорное устройство
-  
-  console.log('poshla_jara')
-	let na = new TouchTracker(eventManager)
-	let content2 = document.querySelector('.proverka');
-	na.startEvents()
 
-	for_interval = () =>{
-		let {x, y} = na.getPos()
-		content2.innerText = x + ' и ' + y;
-		console.log(x, ' u ', y)
-
-	}
-	intervalManager.setInterval(for_interval, 100)
-
-	let content3 = document.querySelector('.proverka2');
-
-	let f = (event) => {
-		event.preventDefault();
-		content3.innerText = event.touches[0].clientX + ' u ' + event.touches[0].clientY
-	}
-
-	eventManager.addEvent(document, 'touchstart', f, { passive: false });
-	eventManager.addEvent(document, 'touchmove', f, { passive: false });
-
-}
-
-
-if (window.matchMedia('(hover: none)').matches){
-
-	console.log('poshla_jara')
-	let na = new TouchTracker(eventManager)
-	let content2 = document.querySelector('.proverka');
-	na.startEvents()
-
-	for_interval = () =>{
-		let {x, y} = na.getPos()
-		content2.innerText = x + ' и ' + y;
-		console.log(x, ' u ', y)
-
-	}
-	intervalManager.setInterval(for_interval, 100)
-
-	let content3 = document.querySelector('.proverka2');
-
-	let f = (event) => {
-		event.preventDefault();
-		content3.innerText = event.touches[0].clientX + ' u ' + event.touches[0].clientY
-	}
-
-	eventManager.addEvent(document, 'touchstart', f, { passive: false });
-
-}
 
 
 
