@@ -304,6 +304,11 @@ class Slider{
 
 		start() {
 			//console.log('enter start()')
+			if ('ontouchstart' in window) {
+				alert("Должно cdsafda")
+				document.querySelector('.sensor').innerText = ('Это высерное устройствыва хуU20');
+				}
+
 			let name
 			
 			let objectdown
@@ -497,7 +502,7 @@ MenuSlider = new Slider(content, nested, eventManager, intervalManager)
 MenuSlider.start()
 
 if ('ontouchstart' in window) {
-	alert("Должно работать")
+	alert("Должно работатsdaь")
   // Это сенсорное устройство
   
   console.log('poshla_jara')
