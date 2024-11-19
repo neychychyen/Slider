@@ -200,6 +200,7 @@ class Slider{
 				this.MouseTracker = new MouseTracker(eventmanager)
 				this.TouchTracker = new TouchTracker(eventManager)
 				this.curPos = null
+				this.passive = true // false Отключаает кастомный скролл при нажатии на элемент?
 
                 this.intervalManager = intervalManager // Используется для  MouseDown и ToucheDown
                 this.currentInterval = null
@@ -319,7 +320,7 @@ class Slider{
 				let forUnHoverable = () =>	{
 
 					let press_preset = (event) => {
-						event.preventDefault();
+						if (this.passive === false){event.preventDefault();}
 						//console.log('Нажали')
 						this.TouchTracker.startEvents()
 
@@ -349,18 +350,19 @@ class Slider{
 						}//
 
 					}
-					name = this.eventManager.addEvent(this.content, objectenter, press_preset, { passive: false })
+					name = this.eventManager.addEvent(this.content, objectenter, press_preset, { passive: this.passive })
 					this.eventManagerDict[objectenter] = name
 
 					let unpress_preset = () => {
-						event.preventDefault();
+						if (this.passive === false){event.preventDefault();}
+						
 						this.TouchTracker.stopEvents()
 						this.curPos = null
 						this.intervalManager.clearSingleInterval(this.currentInterval)
 						this.currentInterval = null//Удалить интервал
 					}
 
-					name = this.eventManager.addEvent(this.content, objectleave, unpress_preset, { passive: false })
+					name = this.eventManager.addEvent(this.content, objectleave, unpress_preset, { passive: this.passive })
 					this.eventManagerDict[objectleave] = name
 				}
 			
@@ -497,11 +499,6 @@ MenuSlider = new Slider(content, nested, eventManager, intervalManager)
 
 
 MenuSlider.start()
-
-
-
-
-
 
 
 
