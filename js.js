@@ -208,7 +208,8 @@ class Slider{
                 this.Intervals = {
 					    hoverableScroll: undefined,
 					    unhoverableScroll: undefined,
-					    widthScroll: undefined
+					    widthScroll: undefined,
+					    logs: undefined
 					};
 
 		}
@@ -308,6 +309,37 @@ class Slider{
 		else {this.returnInRange(pixelsToAdd)}
 		}
 
+		console_log(param){
+			let paramsTable = {
+				'intervals': this.Intervals
+			}
+
+
+
+
+			if (param in paramsTable) {
+
+
+			    let parametr = paramsTable[param];  // Динамически извлекаем значение
+			    let preset = () => {
+					console.log(parametr)
+				}
+
+
+			    if (this.Intervals['logs'] === undefined){
+								//console.log('currentInterval === null')
+								this.Intervals['logs'] = this.intervalManager.setInterval(preset , 1000)
+						}
+				else{
+					this.intervalManager.clearSingleInterval(this.Intervals['logs'])
+					this.Intervals['logs'] = undefined//Удалить интервал
+				}
+			}
+			 else {
+			    console.log('Unknown parameter:', param);  // Обрабатываем случай, если параметр не найден
+			}
+		}
+
 
 		start() {
 
@@ -354,9 +386,9 @@ class Slider{
                                 } 
 						}
 
-						if (this.Intervals[this.unhoverableScroll] === undefined){
+						if (this.Intervals['unhoverableScroll'] === undefined){
 								//console.log('currentInterval === null')
-								this.Intervals[this.unhoverableScroll] = this.intervalManager.setInterval(interval_preset , 100)
+								this.Intervals['unhoverableScroll'] = this.intervalManager.setInterval(interval_preset , 100)
 						}//
 
 					}
@@ -368,8 +400,8 @@ class Slider{
 						
 						this.TouchTracker.stopEvents()
 						this.curPos = null
-						this.intervalManager.clearSingleInterval(this.Intervals[this.unhoverableScroll])
-						this.Intervals[this.unhoverableScroll] = undefined//Удалить интервал
+						this.intervalManager.clearSingleInterval(this.Intervals['unhoverableScroll'])
+						this.Intervals['unhoverableScroll'] = undefined//Удалить интервал
 					}
 
 					name = this.eventManager.addEvent(this.content, objectleave, unpress_preset, { passive: this.passive })
@@ -386,7 +418,7 @@ class Slider{
 			
 
 			if (window.matchMedia('(hover: hover)').matches) {
-				console.log('(hover: hover)')
+				//console.log('(hover: hover)')
 
 				objectdown = 'mousedown'
 				objectup = 'mouseup'
@@ -396,21 +428,58 @@ class Slider{
 				
 
 				let forHoverable = () => {
+					//console.log(this.Intervals)
 
 					let enter_preset = (event) => {
+						//console.log('Вошли в область')
+						//console.log(this.Intervals)
 
 						this.MouseTracker.startEvents()
-						let press_preset = (event) => {
 
+
+
+						let sidesLogic = () => {
+
+							let {x, y} = this.MouseTracker.getPos()
+							if (x !== null){
+									const rect = this.content.getBoundingClientRect();
+									const elementWidth = rect.width;
+									const mouseX = x - rect.left; // Позиция мыши относительно левого края элемента
+									const screenWidth = window.innerWidth;
+
+									// Определяем, попадает ли мышь в левую или правую крайность (менее 10% или более 90%)
+									if (mouseX < elementWidth * 0.03) {
+
+									    this.addToLeft(Math.floor(screenWidth * 0.1))
+
+									} else if (mouseX > elementWidth * 0.97) {
+									    this.addToLeft(-1*(Math.floor(screenWidth * 0.1)))
+									}//при наведении на края экрана
+							}
+						}
+
+								
+			
+						if (this.Intervals['widthScroll'] == undefined || this.Intervals['widthScroll'] == false){
+								//console.log("this.Intervals['widthScroll'] == undefined ||")
+								this.Intervals['widthScroll'] = this.intervalManager.setInterval(sidesLogic , 100)
+						}
+
+						let press_preset = (event) => {
+							if (this.Intervals['widthScroll'] != undefined || this.Intervals['widthScroll'] != false){
+								this.intervalManager.clearSingleInterval(this.Intervals['widthScroll'])
+								this.Intervals['widthScroll'] = false
+							}
 							
 							//console.log('Создаем this.intervalMainId')
+
 
 							let interval_preset = () => {
 								//console.log(this.intervalMainId)
 								let press_button = () => {
 									let {x, y} = this.MouseTracker.getPos()
 								
-										//console.log(this.curPos, x)
+									//console.log(this.curPos, x)
 		                            if (this.curPos == null){
 		                            	//console.log(`curPos будет равен ${x}`)
 		                            	this.curPos = x
@@ -430,10 +499,12 @@ class Slider{
 		                        
 							}
 
-							if (this.Intervals[this.hoverableScroll] === undefined){
-								this.Intervals[this.hoverableScroll] = this.intervalManager.setInterval(interval_preset , 100)
+							if (this.Intervals['hoverableScroll'] === undefined){
+
+								this.Intervals['hoverableScroll'] = this.intervalManager.setInterval(interval_preset , 100)
 								//console.log('this.currentInterval ', this.currentInterval)
 							}
+
 
 						} 
 
@@ -443,9 +514,9 @@ class Slider{
 						let mouseUp_preset = (event) => {
 							//console.log('mouseUp_presett')
 							
-							if (this.Intervals[this.hoverableScroll] !== undefined){
-								this.intervalManager.clearSingleInterval(this.Intervals[this.hoverableScroll])
-								this.Intervals[this.hoverableScroll] = undefined
+							if (this.Intervals['hoverableScroll'] !== undefined){
+								this.intervalManager.clearSingleInterval(this.Intervals['hoverableScroll'])
+								this.Intervals['hoverableScroll'] = undefined
 								let new_name = this.eventManagerDict[objectdown]
 
 								this.eventManager.removeEvent(new_name)
@@ -458,23 +529,12 @@ class Slider{
 								this.eventManagerDict[objectdown] = name
 								}
 
+							if (this.Intervals['widthScroll'] === false){
+								this.Intervals['widthScroll'] = this.intervalManager.setInterval(sidesLogic , 100)
+							}
 						}
 
-						let sidesLogic = () => {
-									const rect = this.content.getBoundingClientRect();
-									const elementWidth = rect.width;
-									const mouseX = this.curPos - rect.left; // Позиция мыши относительно левого края элемента
-
-									// Определяем, попадает ли мышь в левую или правую крайность (менее 10% или более 90%)
-									if (mouseX < elementWidth * 0.1) {
-									    console.log('Мышь находится на <10% ширины элемента');
-									} else if (mouseX > elementWidth * 0.9) {
-									    console.log('Мышь находится на >90% ширины элемента');
-									}//при наведении на края экрана
-						}
-
-								
-								sidesLogic() //Нужно написать интервалы
+						 //Нужно написать интервалы
 
 
 
@@ -486,6 +546,10 @@ class Slider{
 
 				let leave_preset = () => {
 					//console.log('Leave_preset')
+					if (this.Intervals['widthScroll'] !== undefined){
+								this.intervalManager.clearSingleInterval(this.Intervals['widthScroll'])
+								this.Intervals['widthScroll'] = undefined
+					}
 
 					this.MouseTracker.stopEvents()
 
@@ -507,12 +571,12 @@ class Slider{
 				//start
 
 				forHoverable()
+
+				//console.log(this.intervalManager.getAllIntervals())
 			}
-			
-			
+				
 		}
 		
-
 }   
     
 
@@ -528,11 +592,31 @@ const nested = document.querySelector('.nested');
 
 
 
-MenuSlider = new Slider(content, nested, eventManager, intervalManager)
+let MenuSlider = new Slider(content, nested, eventManager, intervalManager)
 
 
 MenuSlider.start()
 
+
+const eventManagerDocument = new EventManager(NameManager);
+
+function trackResize(eventManager) {
+
+
+    let resize = () => {
+        // Выводим в консоль информацию о размерах окна
+        MenuSlider.returnInRange()
+        
+        // Проверка изменения масштаба
+
+    }
+    
+    // Обработчик события resize
+    eventManager.addEvent(window, 'resize', resize);
+}
+
+
+trackResize(eventManagerDocument)
 
 
 

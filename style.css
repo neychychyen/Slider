@@ -84,7 +84,7 @@ body {
 
 
 .slider-content{
-  height: 400px; 
+  max-height: 100vh; 
   background: var(--OrangeRed);
   display:flex;
   padding: 10px;
@@ -97,33 +97,45 @@ body {
 
   background-color: var(--Coral);
 
-  height: var(--coub_height);
-  min-height: var(--coub_height_min);
+  min-height: 10vh;
   width: var(--coub_height);
+  transition: 2.0s;
+  
 
 }
 
 
 .logo{
+  overflow: hidden;
   position: relative;
-  display:none;
-  top: 100%;
   background-color: yellowgreen;
-  height: var(--coub_height);
-  min-height: var(--coub_height_min);
-  width: var(--coub_height);
+  height: 100%;
+  width: 100%;
+  transition: 2.0s;
+}
+
+.coub:hover {
+  max-height: 100vh;
 }
 
 .coub:hover .logo{
-  display: block;
+  max-height: 100vh;
+  transition: 2.0s;
 }
+
+.nested:has(.coub:hover) {
+  background-color: darkcyan;
+  max-height: 100vh;
+  transition: 2.0s;
+}
+
+
 
 
 
 .slider{
   overflow: hidden;
   display: flex;
-  background: aquamarine;
   gap: 10px;
   width: 100%;
   padding: 10px;
@@ -137,6 +149,7 @@ body {
 }
 
 .nested{
+  max-height: 7px;
   position: relative;
   display: flex;
   gap: 10px;
