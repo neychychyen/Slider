@@ -202,10 +202,14 @@ class Slider{
 				this.curPos = null
 				this.passive = true // false Отключаает кастомный скролл при нажатии на элемент?
 				this.Accelerator = 5 // Усилитель руля для addleft
+				this.AcceleratorPc = 3
 
                 this.intervalManager = intervalManager // Используется для  MouseDown и ToucheDown
-                this.currentInterval = null
-				
+                this.Intervals = {
+					    hoverableScroll: undefined,
+					    unhoverableScroll: undefined,
+					    widthScroll: undefined
+					};
 
 		}
 
@@ -318,6 +322,11 @@ class Slider{
 				objectenter = 'touchstart'
 				objectleave = 'touchend'
 
+
+				//Логика на js если ты попадаешь на < 10 или > 90% ширины элемента, на который навелись
+				
+
+				//Скролл при нажатии
 				let forUnHoverable = () =>	{
 
 					let press_preset = (event) => {
@@ -345,9 +354,9 @@ class Slider{
                                 } 
 						}
 
-						if (this.currentInterval === null){
+						if (this.Intervals[this.unhoverableScroll] === undefined){
 								//console.log('currentInterval === null')
-								this.currentInterval = this.intervalManager.setInterval(interval_preset , 100)
+								this.Intervals[this.unhoverableScroll] = this.intervalManager.setInterval(interval_preset , 100)
 						}//
 
 					}
@@ -359,8 +368,8 @@ class Slider{
 						
 						this.TouchTracker.stopEvents()
 						this.curPos = null
-						this.intervalManager.clearSingleInterval(this.currentInterval)
-						this.currentInterval = null//Удалить интервал
+						this.intervalManager.clearSingleInterval(this.Intervals[this.unhoverableScroll])
+						this.Intervals[this.unhoverableScroll] = undefined//Удалить интервал
 					}
 
 					name = this.eventManager.addEvent(this.content, objectleave, unpress_preset, { passive: this.passive })
@@ -384,6 +393,8 @@ class Slider{
 				objectenter = 'mouseenter'
 				objectleave = 'mouseleave'
 
+				
+
 				let forHoverable = () => {
 
 					let enter_preset = (event) => {
@@ -396,26 +407,31 @@ class Slider{
 
 							let interval_preset = () => {
 								//console.log(this.intervalMainId)
-								let {x, y} = this.MouseTracker.getPos()
+								let press_button = () => {
+									let {x, y} = this.MouseTracker.getPos()
+								
+										//console.log(this.curPos, x)
+		                            if (this.curPos == null){
+		                            	//console.log(`curPos будет равен ${x}`)
+		                            	this.curPos = x
+		                            	//console.log(this.curPos)
+		                            }
 
-								//console.log(this.curPos, x)
-	                            if (this.curPos == null){
-	                            	//console.log(`curPos будет равен ${x}`)
-	                            	this.curPos = x
-	                            	//console.log(this.curPos)
-	                            }
+		                            else{
+		                                //console.log(`result[0] ${result[0]} - curPos ${this.curPos} = ${result[0] - this.curPos}`)
 
-	                            else{
-	                                //console.log(`result[0] ${result[0]} - curPos ${this.curPos} = ${result[0] - this.curPos}`)
+		                                //console.log(`${x} - ${this.curPos}: ${x - this.curPos}`)
+		                                this.addToLeft(this.AcceleratorPc * (x - this.curPos))
+		                                this.curPos = x
+		                                }  //при нажатии мыши на объект
+		                        }
+		                        press_button()
 
-	                                //console.log(`${x} - ${this.curPos}: ${x - this.curPos}`)
-	                                this.addToLeft(x - this.curPos)
-	                                this.curPos = x
-	                                }
+		                        
 							}
 
-							if (this.currentInterval === null){
-								this.currentInterval = this.intervalManager.setInterval(interval_preset , 100)
+							if (this.Intervals[this.hoverableScroll] === undefined){
+								this.Intervals[this.hoverableScroll] = this.intervalManager.setInterval(interval_preset , 100)
 								//console.log('this.currentInterval ', this.currentInterval)
 							}
 
@@ -427,9 +443,9 @@ class Slider{
 						let mouseUp_preset = (event) => {
 							//console.log('mouseUp_presett')
 							
-							if (this.currentInterval !== null){
-								this.intervalManager.clearSingleInterval(this.currentInterval)
-								this.currentInterval = null
+							if (this.Intervals[this.hoverableScroll] !== undefined){
+								this.intervalManager.clearSingleInterval(this.Intervals[this.hoverableScroll])
+								this.Intervals[this.hoverableScroll] = undefined
 								let new_name = this.eventManagerDict[objectdown]
 
 								this.eventManager.removeEvent(new_name)
@@ -443,6 +459,22 @@ class Slider{
 								}
 
 						}
+
+						let sidesLogic = () => {
+									const rect = this.content.getBoundingClientRect();
+									const elementWidth = rect.width;
+									const mouseX = this.curPos - rect.left; // Позиция мыши относительно левого края элемента
+
+									// Определяем, попадает ли мышь в левую или правую крайность (менее 10% или более 90%)
+									if (mouseX < elementWidth * 0.1) {
+									    console.log('Мышь находится на <10% ширины элемента');
+									} else if (mouseX > elementWidth * 0.9) {
+									    console.log('Мышь находится на >90% ширины элемента');
+									}//при наведении на края экрана
+						}
+
+								
+								sidesLogic() //Нужно написать интервалы
 
 
 

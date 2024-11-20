@@ -140,7 +140,7 @@ body {
   position: relative;
   display: flex;
   gap: 10px;
-  transition: left var(--real_transition); ease-out;
+  transition: left var(--transition_time); ease-out;
 }
 
 
