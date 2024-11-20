@@ -84,6 +84,7 @@ body {
 
 
 .slider-content{
+  
   max-height: 100vh; 
   background: var(--OrangeRed);
   display:flex;
@@ -93,10 +94,15 @@ body {
   overflow: hidden;
 }
 
+.slider-content:active{
+  cursor:move;
+}
+
+
 .coub{
 
-  background-color: var(--Coral);
-
+  
+  user-select: none;
   min-height: 10vh;
   width: var(--coub_height);
   transition: 2.0s;
@@ -105,12 +111,20 @@ body {
 }
 
 
-.logo{
+.displayedSubMenu{
+  width: fit-content;
+  max-height: 0vh;
   overflow: hidden;
-  position: relative;
   background-color: yellowgreen;
-  height: 100%;
-  width: 100%;
+
+}
+
+.logo{
+  position: relative;
+  background-color: var(--Coral);
+  
+  height: 10vh;
+  width: auto;
   transition: 2.0s;
 }
 
@@ -120,11 +134,18 @@ body {
 
 .coub:hover .logo{
   max-height: 100vh;
-  transition: 2.0s;
+  transition: max-height 2.0s;
 }
 
-.nested:has(.coub:hover) {
-  background-color: darkcyan;
+.coub:hover .displayedSubMenu{
+  max-height: 100vh;
+  transition: max-height 2.0s;
+}
+
+
+
+.nested.unactive:has(.coub:hover) {
+  
   max-height: 100vh;
   transition: 2.0s;
 }
@@ -149,7 +170,7 @@ body {
 }
 
 .nested{
-  max-height: 7px;
+  max-height: 10vh;
   position: relative;
   display: flex;
   gap: 10px;
@@ -168,4 +189,19 @@ body {
   width: 100%;
   height: 100%;
   background: greenyellow;
+}
+
+.submenuButton{
+  padding: 5px;
+  white-space: nowrap;
+}
+
+
+.submenuButton:hover{
+  background-color: red;
+}
+
+.wrapedText{
+  white-space: break-spaces!important;
+
 }

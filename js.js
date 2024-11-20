@@ -342,6 +342,14 @@ class Slider{
 
 
 		start() {
+			let deleteUnactive = () =>{
+				this.nested.classList.remove('unactive')
+			}
+
+			let pushUnactive = () =>{
+				this.nested.classList.add('unactive')
+			}
+
 
 			let name
 			
@@ -362,6 +370,10 @@ class Slider{
 				let forUnHoverable = () =>	{
 
 					let press_preset = (event) => {
+						setTimeout(() => {
+						  deleteUnactive()
+						}, 200); 
+
 						if (this.passive === false){event.preventDefault();}
 						//console.log('Нажали')
 						this.TouchTracker.startEvents()
@@ -396,6 +408,11 @@ class Slider{
 					this.eventManagerDict[objectenter] = name
 
 					let unpress_preset = () => {
+						setTimeout(() => {
+						  pushUnactive()
+						}, 200); 
+
+
 						if (this.passive === false){event.preventDefault();}
 						
 						this.TouchTracker.stopEvents()
@@ -436,9 +453,12 @@ class Slider{
 
 						this.MouseTracker.startEvents()
 
+						
 
 
 						let sidesLogic = () => {
+
+
 
 							let {x, y} = this.MouseTracker.getPos()
 							if (x !== null){
@@ -473,7 +493,7 @@ class Slider{
 							
 							//console.log('Создаем this.intervalMainId')
 
-
+							deleteUnactive()
 							let interval_preset = () => {
 								//console.log(this.intervalMainId)
 								let press_button = () => {
@@ -513,7 +533,7 @@ class Slider{
 
 						let mouseUp_preset = (event) => {
 							//console.log('mouseUp_presett')
-							
+							pushUnactive()
 							if (this.Intervals['hoverableScroll'] !== undefined){
 								this.intervalManager.clearSingleInterval(this.Intervals['hoverableScroll'])
 								this.Intervals['hoverableScroll'] = undefined
@@ -550,6 +570,8 @@ class Slider{
 								this.intervalManager.clearSingleInterval(this.Intervals['widthScroll'])
 								this.Intervals['widthScroll'] = undefined
 					}
+
+					
 
 					this.MouseTracker.stopEvents()
 
