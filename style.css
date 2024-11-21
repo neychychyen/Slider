@@ -83,8 +83,12 @@ body {
 }
 
 
+.content{
+  position: fixed;
+}
+
 .slider-content{
-  
+  position: relative;
   max-height: 100vh; 
   background: var(--OrangeRed);
   display:flex;
@@ -127,6 +131,8 @@ body {
   width: auto;
   transition: 2.0s;
 }
+
+
 
 .nested.unactive .coub:hover {
   max-height: 100vh;

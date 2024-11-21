@@ -363,6 +363,8 @@ class Slider{
 				objectleave = 'touchend'
 
 
+
+
 				//Логика на js если ты попадаешь на < 10 или > 90% ширины элемента, на который навелись
 				
 
@@ -378,6 +380,7 @@ class Slider{
 						//console.log('Нажали')
 						this.TouchTracker.startEvents()
 
+						//console.log(prevent, x)
 						let interval_preset = () => { 
 							//console.log('this.intervalMainId')
 							let {x, y} = this.TouchTracker.getPos()
@@ -408,9 +411,18 @@ class Slider{
 					this.eventManagerDict[objectenter] = name
 
 					let unpress_preset = () => {
-						setTimeout(() => {
-						  pushUnactive()
-						}, 100); 
+						//console.log(this.curPos)
+
+						
+
+						if (this.curPos === null){
+							console.log('Не равно')
+							setTimeout(() => {
+								  pushUnactive()
+								}, 100); 
+							
+						}
+
 
 
 						if (this.passive === false){event.preventDefault();}
