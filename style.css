@@ -128,16 +128,16 @@ body {
   transition: 2.0s;
 }
 
-.coub:hover {
+.nested.unactive .coub:hover {
   max-height: 100vh;
 }
 
-.coub:hover .logo{
+.nested.unactive .coub:hover .logo{
   max-height: 100vh;
   transition: max-height 2.0s;
 }
 
-.coub:hover .displayedSubMenu{
+.nested.unactive .coub:hover .displayedSubMenu{
   max-height: 100vh;
   transition: max-height 2.0s;
 }
