@@ -621,7 +621,7 @@ const NameManager = new NameCreator()
 const eventManager = new EventManager(NameManager);
 const intervalManager = new IntervalManager()
 
-const content = document.querySelector('.slider-content');
+const content = document.querySelector('.main-menu-buttons');
 const nested = document.querySelector('.nested');
 
 

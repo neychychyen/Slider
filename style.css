@@ -1,38 +1,3 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box; /* Убедитесь, что padding входит в общую ширину */
-
-  scrollbar-width: thin;
-  scrollbar-color: red hsl(0 0% 20%);
-
-}
-
-
-/*Скроллбар */
-/* Скрываем стандартные кнопки */
-::-webkit-scrollbar-button {
-    display: none;
-}
-
-/* Настраиваем общий вид скроллбара */
-::-webkit-scrollbar {
-    width: 1vw; /* Ширина вертикального скроллбара */
-    height: 1vw; /* Высота горизонтального скроллбара */
-}
-
-/* Фон полосы прокрутки */
-::-webkit-scrollbar-track {
-    background: green; /* Прозрачный трек */
-}
-
-/* Сам ползунок */
-::-webkit-scrollbar-thumb {
-    background-color: red; /* Тонкая темная полоска */
-    border-radius: 0px; /* Скругление */
-}
-
-
 
 :root {
 
@@ -78,16 +43,13 @@ body {
   padding: 0;
   background-color: blue;
   height: 5000px;  
-
-  
 }
-
 
 .content{
   position: fixed;
 }
 
-.slider-content{
+.main-menu-buttons{
   position: relative;
   max-height: 100vh; 
   background: var(--OrangeRed);
@@ -98,33 +60,53 @@ body {
   overflow: hidden;
 }
 
-.slider-content:active{
+.slider{
+  overflow: hidden;
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+  z-index:100;
+}
+
+.nested{
+  max-height: 10vh;
+  position: relative;
+  display: flex;
+  gap: 10px;
+  transition: left var(--transition_time); ease-out;
+}
+
+
+
+
+.main-menu-buttons:active{
   cursor:move;
 }
 
+.nested.unactive .menu-button:hover {
+  max-height: 100vh;
+}
 
-.coub{
+.nested.unactive .menu-button:hover .button-text{
+  max-height: 100vh;
+  transition: max-height 2.0s;
+}
 
+.nested.unactive .menu-button:hover .displayedSubMenuButton{
+  max-height: 100vh;
+  transition: max-height 2.0s;
+}
+
+.nested.unactive:has(.menu-button:hover) {
   
-  user-select: none;
-  min-height: 10vh;
-  width: var(--coub_height);
+  max-height: 100vh;
   transition: 2.0s;
-  
-
 }
 
 
-.displayedSubMenu{
-  min-width: 200%;
-  width: fit-content;
-  max-height: 0vh;
-  overflow: hidden;
-  background-color: yellowgreen;
 
-}
-
-.logo{
+.button-text{
   position: relative;
   background-color: var(--Coral);
   
@@ -135,53 +117,40 @@ body {
 
 
 
-.nested.unactive .coub:hover {
-  max-height: 100vh;
-}
+.menu-button{
 
-.nested.unactive .coub:hover .logo{
-  max-height: 100vh;
-  transition: max-height 2.0s;
-}
-
-.nested.unactive .coub:hover .displayedSubMenu{
-  max-height: 100vh;
-  transition: max-height 2.0s;
-}
-
-
-
-.nested.unactive:has(.coub:hover) {
   
-  max-height: 100vh;
+  user-select: none;
+  min-height: 10vh;
+  width: var(--coub_height);
   transition: 2.0s;
+  
 }
 
 
-
-
-
-.slider{
+.displayedSubMenuButton{
+  min-width: 200%;
+  max-width: 100vw;
+  width: fit-content;
+  max-height: 0vh;
   overflow: hidden;
-  display: flex;
-  gap: 10px;
-  width: 100%;
-  padding: 10px;
-  z-index:100;
+  background-color: yellowgreen;
+
 }
 
-
-.ScrolableX{
-  overflow-x: scroll;
-  overflow-y: hidden;
-}
-
-.nested{
-  max-height: 10vh;
+.reverse-displayedSubMenuButton{
   position: relative;
-  display: flex;
-  gap: 10px;
-  transition: left var(--transition_time); ease-out;
+  left: 100%;
+  transform: translateX(-100%);
+}
+
+
+.submenuButton{
+  padding: 5px;
+}
+
+.submenuButton:hover{
+  background-color: red;
 }
 
 
@@ -196,19 +165,4 @@ body {
   width: 100%;
   height: 100%;
   background: greenyellow;
-}
-
-.submenuButton{
-  padding: 5px;
-}
-
-
-.submenuButton:hover{
-  background-color: red;
-}
-
-.reverse{
-  position: relative;
-  left: 100%;
-  transform: translateX(-100%);
 }
