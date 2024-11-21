@@ -372,7 +372,7 @@ class Slider{
 					let press_preset = (event) => {
 						setTimeout(() => {
 						  deleteUnactive()
-						}, 200); 
+						}, 100); 
 
 						if (this.passive === false){event.preventDefault();}
 						//console.log('Нажали')
@@ -410,7 +410,7 @@ class Slider{
 					let unpress_preset = () => {
 						setTimeout(() => {
 						  pushUnactive()
-						}, 200); 
+						}, 100); 
 
 
 						if (this.passive === false){event.preventDefault();}
