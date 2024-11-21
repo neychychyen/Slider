@@ -116,6 +116,7 @@ body {
 
 
 .displayedSubMenu{
+  min-width: 200%;
   width: fit-content;
   max-height: 0vh;
   overflow: hidden;
@@ -199,7 +200,6 @@ body {
 
 .submenuButton{
   padding: 5px;
-  white-space: nowrap;
 }
 
 
@@ -207,7 +207,8 @@ body {
   background-color: red;
 }
 
-.wrapedText{
-  white-space: break-spaces!important;
-
+.reverse{
+  position: relative;
+  left: 100%;
+  transform: translateX(-100%);
 }
