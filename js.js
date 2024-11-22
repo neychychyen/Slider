@@ -456,41 +456,10 @@ class Slider{
 			
 				//start
 
-				for (let elem of this.exceptions){
-					let child = document.querySelector(this.exceptions[0])
-
-
-					let inException = (event) => {
-				        // Останавливаем распространение события на родителя
-				        this.eventManager.removeAllEvents()
-				        this.intervalManager.clearIntervals()
-				        this.Intervals = {
-						    hoverableScroll: undefined,
-						    unhoverableScroll: undefined,
-						    widthScroll: undefined,
-						    logs: undefined
-
-						};
-						let outException = (event) => {
-							this.eventManager.addEvent(child, objectenter, inException)
-							//forUnHoverable()
-						}
 
 
 
-						this.eventManager.addEvent(child, objectleave, outException)
-						
-				    }
-
-					
-
-					
-					this.eventManager.addEvent(child, objectenter, inException)
-					
-				}
-
-
-				//forUnHoverable()
+				forUnHoverable()
 
 			}
 
