@@ -98,7 +98,7 @@ class MouseTracker{
 
 		// Обработчик события мыши
 		__handleMouse(event) {
-				event.preventDefault();
+				//event.preventDefault();
 				this.mouseX = event.clientX; // Координата X мыши
 				this.mouseY = event.clientY; // Координата Y мыши
 
@@ -183,9 +183,11 @@ class IntervalManager {
 
 class Slider{
 
-		constructor(content, nested, eventmanager, intervalManager) {
+		constructor(content, nested, exceptions, eventmanager, intervalManager) {
 				this.eventManager = eventmanager
 				this.eventManagerDict = {}
+
+				this.exceptions = exceptions
 
 
 
@@ -351,12 +353,21 @@ class Slider{
 			}
 
 
+
+
+			
+
+
 			let name
 			
 			let objectdown
 			let objectup
 			let objectenter
 			let objectleave
+
+
+
+
 			//console.log('enter start()')
 			if ('ontouchstart' in window || window.matchMedia('(hover: none)').matches) { //window.matchMedia('(hover: none)').matches || 
 				objectenter = 'touchstart'
@@ -365,7 +376,7 @@ class Slider{
 
 
 
-				//Логика на js если ты попадаешь на < 10 или > 90% ширины элемента, на который навелись
+
 				
 
 				//Скролл при нажатии
@@ -376,7 +387,9 @@ class Slider{
 						  deleteUnactive()
 						}, 100); 
 
-						if (this.passive === false){event.preventDefault();}
+						if (this.passive === false){
+							//event.preventDefault();
+						}
 						//console.log('Нажали')
 						this.TouchTracker.startEvents()
 
@@ -420,12 +433,16 @@ class Slider{
 							setTimeout(() => {
 								  pushUnactive()
 								}, 100); 
+
+
 							
 						}
 
 
 
-						if (this.passive === false){event.preventDefault();}
+						if (this.passive === false){
+							//event.preventDefault();
+						}
 						
 						this.TouchTracker.stopEvents()
 						this.curPos = null
@@ -439,7 +456,41 @@ class Slider{
 			
 				//start
 
-				forUnHoverable()
+				for (let elem of this.exceptions){
+					let child = document.querySelector(this.exceptions[0])
+
+
+					let inException = (event) => {
+				        // Останавливаем распространение события на родителя
+				        this.eventManager.removeAllEvents()
+				        this.intervalManager.clearIntervals()
+				        this.Intervals = {
+						    hoverableScroll: undefined,
+						    unhoverableScroll: undefined,
+						    widthScroll: undefined,
+						    logs: undefined
+
+						};
+						let outException = (event) => {
+							this.eventManager.addEvent(child, objectenter, inException)
+							//forUnHoverable()
+						}
+
+
+
+						this.eventManager.addEvent(child, objectleave, outException)
+						
+				    }
+
+					
+
+					
+					this.eventManager.addEvent(child, objectenter, inException)
+					
+				}
+
+
+				//forUnHoverable()
 
 			}
 
@@ -459,15 +510,15 @@ class Slider{
 				let forHoverable = () => {
 					//console.log(this.Intervals)
 
-					let enter_preset = (event) => {
-						//console.log('Вошли в область')
+				let enter_preset = (event) => {
+						console.log('Вошли в область')
 						//console.log(this.Intervals)
 
 						this.MouseTracker.startEvents()
 
 						
 
-
+						//Начало логики прокрутки края экрана
 						let sidesLogic = () => {
 
 
@@ -497,6 +548,10 @@ class Slider{
 								this.Intervals['widthScroll'] = this.intervalManager.setInterval(sidesLogic , 100)
 						}
 
+						// Конец прокуртки
+
+
+						//Начало логики Прожатия кнопок
 						let press_preset = (event) => {
 							if (this.Intervals['widthScroll'] != undefined || this.Intervals['widthScroll'] != false){
 								this.intervalManager.clearSingleInterval(this.Intervals['widthScroll'])
@@ -530,6 +585,12 @@ class Slider{
 
 		                        
 							}
+
+							let exc = document.querySelector(this.exceptions[0])
+
+							exc.addEventListener('click', () => {
+						      console.log('Div был нажат!');
+						    })
 
 							if (this.Intervals['hoverableScroll'] === undefined){
 
@@ -577,7 +638,7 @@ class Slider{
 				}
 
 				let leave_preset = () => {
-					//console.log('Leave_preset')
+					console.log('Leave_preset')
 					if (this.Intervals['widthScroll'] !== undefined){
 								this.intervalManager.clearSingleInterval(this.Intervals['widthScroll'])
 								this.Intervals['widthScroll'] = undefined
@@ -604,6 +665,40 @@ class Slider{
 
 				//start
 
+				for (let elem of this.exceptions){
+					let child = document.querySelector(this.exceptions[0])
+
+
+					let inException = (event) => {
+				        // Останавливаем распространение события на родителя
+				        this.eventManager.removeAllEvents()
+				        this.intervalManager.clearIntervals()
+				        this.Intervals = {
+						    hoverableScroll: undefined,
+						    unhoverableScroll: undefined,
+						    widthScroll: undefined,
+						    logs: undefined
+
+						};
+						let outException = (event) => {
+							this.eventManager.addEvent(child, objectenter, inException)
+							forHoverable()
+						}
+
+
+
+						this.eventManager.addEvent(child, objectleave, outException)
+						
+				    }
+
+					
+
+					
+					this.eventManager.addEvent(child, objectenter, inException)
+					
+				}
+
+				
 				forHoverable()
 
 				//console.log(this.intervalManager.getAllIntervals())
@@ -623,10 +718,11 @@ const intervalManager = new IntervalManager()
 
 const content = document.querySelector('.main-menu-buttons');
 const nested = document.querySelector('.nested');
+exceptions = ['.displayedSubMenuButton']
 
 
 
-let MenuSlider = new Slider(content, nested, eventManager, intervalManager)
+let MenuSlider = new Slider(content, nested, exceptions, eventManager, intervalManager)
 
 
 MenuSlider.start()
