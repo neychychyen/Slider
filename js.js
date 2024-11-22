@@ -383,13 +383,7 @@ class Slider{
 				let forUnHoverable = () =>	{
 
 					let press_preset = (event) => {
-						setTimeout(() => {
-						  deleteUnactive()
-						}, 100); 
 
-						if (this.passive === false){
-							//event.preventDefault();
-						}
 						//console.log('Нажали')
 						this.TouchTracker.startEvents()
 
@@ -398,7 +392,7 @@ class Slider{
 							//console.log('this.intervalMainId')
 							let {x, y} = this.TouchTracker.getPos()
 
-							//console.log(this.curPos, x)
+							console.log(this.curPos, x)
                             if (this.curPos == null){
                             	//console.log(`curPos будет равен ${x}`)
                             	this.curPos = x
@@ -429,10 +423,7 @@ class Slider{
 						
 
 						if (this.curPos === null){
-							console.log('Не равно')
-							setTimeout(() => {
-								  pushUnactive()
-								}, 100); 
+
 
 
 							
